@@ -573,13 +573,30 @@ namespace ConsultaCEPs
                     return;
                 }
 
-                List<string> ceps = ConsultaLoteUtil.ExtrairCepsValidos(
+                ResultadoValidacaoLote validacao = ConsultaLoteUtil.Analisar(
                     File.ReadAllLines(abrir.FileName, Encoding.UTF8), 100);
+                List<string> ceps = validacao.Ceps;
 
                 if (ceps.Count == 0)
                 {
-                    MessageBox.Show("O arquivo não contém CEPs válidos com oito números.", "Consulta em lote", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(
+                        string.Format("Nenhum CEP válido foi encontrado no arquivo.\n\nLinhas lidas: {0}\nInválidos: {1}", validacao.LinhasLidas, validacao.Invalidos),
+                        "Consulta em lote", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
+                }
+
+                if (validacao.Invalidos > 0 || validacao.Duplicados > 0 || validacao.Excedentes > 0)
+                {
+                    string aviso = string.Format(
+                        "Foram encontrados {0} CEP(s) válido(s) para consulta.\n\nInválidos ignorados: {1}\nDuplicados ignorados: {2}",
+                        ceps.Count, validacao.Invalidos, validacao.Duplicados);
+
+                    if (validacao.Excedentes > 0)
+                    {
+                        aviso += string.Format("\nLimite de 100 CEPs: {0} excedente(s) ignorado(s).", validacao.Excedentes);
+                    }
+
+                    MessageBox.Show(aviso, "Validação do arquivo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
 
                 List<ResultadoConsultaLote> resultados = new List<ResultadoConsultaLote>();

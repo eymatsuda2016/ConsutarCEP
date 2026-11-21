@@ -44,5 +44,18 @@ namespace ConsultaCEPs.Tests
             Assert.AreEqual(0, ConsultaLoteUtil.ExtrairCepsValidos(null, 100).Count);
             Assert.AreEqual(0, ConsultaLoteUtil.ExtrairCepsValidos(new[] { "01001000" }, 0).Count);
         }
+
+        [TestMethod]
+        public void Analisar_InformaMotivosDosItensIgnorados()
+        {
+            var resultado = ConsultaLoteUtil.Analisar(
+                new[] { "01001000", "01001-000", "1234", "abcdefgh", "02000000", "03000000" }, 2);
+
+            Assert.AreEqual(6, resultado.LinhasLidas);
+            Assert.AreEqual(2, resultado.Invalidos);
+            Assert.AreEqual(1, resultado.Duplicados);
+            Assert.AreEqual(1, resultado.Excedentes);
+            Assert.AreEqual(2, resultado.Ceps.Count);
+        }
     }
 }
