@@ -141,6 +141,7 @@ namespace ConsultaCEPs
         private void FrmConsultaCEP_Load(object sender, EventArgs e)
         {
             PrepararJanelaInicial();
+            ConfigurarAcessibilidade();
             ArredondarBotao(btnConsultar, 12);
             ArredondarBotao(btnLimpar, 10);
             ArredondarBotao(btnSair, 10);
@@ -161,6 +162,52 @@ namespace ConsultaCEPs
             btnConsultar.ImageAlign = ContentAlignment.MiddleLeft;
             btnConsultar.TextImageRelation = TextImageRelation.ImageBeforeText;
             txtCEP.Focus();
+        }
+
+        private void ConfigurarAcessibilidade()
+        {
+            txtCEP.AccessibleName = "Busca rápida por CEP";
+            txtCEP.AccessibleDescription = "Informe um CEP com oito números para realizar uma consulta rápida.";
+            txtEstado.AccessibleName = "UF";
+            txtEstado.AccessibleDescription = "Informe a sigla do estado com duas letras.";
+            txtCidade.AccessibleName = "Cidade";
+            txtCidade.AccessibleDescription = "Informe a cidade do endereço a ser consultado.";
+            txtLogradouro.AccessibleName = "Logradouro";
+            txtLogradouro.AccessibleDescription = "Informe o nome da rua, avenida ou outro logradouro.";
+            cmbCEPs.AccessibleName = "CEPs encontrados";
+            cmbCEPs.AccessibleDescription = "Selecione um CEP quando houver mais de um resultado.";
+            cmbHistorico.AccessibleName = "Histórico de CEPs";
+            cmbHistorico.AccessibleDescription = "Selecione uma consulta realizada anteriormente.";
+            txtBairro.AccessibleName = "Bairro ou distrito";
+            txtBairro.AccessibleDescription = "Resultado preenchido automaticamente pela consulta.";
+            txtObservacao.AccessibleName = "Observação do CEP";
+            txtObservacao.AccessibleDescription = "Detalhes adicionais do CEP selecionado.";
+            btnConsultar.AccessibleName = "Consultar CEP";
+            btnConsultar.AccessibleDescription = "Executa a consulta do CEP ou do endereço informado.";
+            btnCopiarCep.AccessibleName = "Copiar CEP";
+            btnCopiarCep.AccessibleDescription = "Copia o CEP selecionado para a área de transferência.";
+            btnExportar.AccessibleName = "Exportar consulta";
+            btnExportar.AccessibleDescription = "Salva o resultado em TXT, CSV ou Excel.";
+            btnDiminuirFonte.AccessibleName = "Diminuir tamanho da fonte";
+            btnAumentarFonte.AccessibleName = "Aumentar tamanho da fonte";
+            btnLimpar.AccessibleName = "Limpar formulário";
+            btnSair.AccessibleName = "Sair da aplicação";
+
+            txtCEP.TabIndex = 0;
+            btnConsultar.TabIndex = 1;
+            txtEstado.TabIndex = 0;
+            txtCidade.TabIndex = 1;
+            txtLogradouro.TabIndex = 2;
+            cmbCEPs.TabIndex = 3;
+            cmbHistorico.TabIndex = 4;
+            txtBairro.TabStop = false;
+            txtObservacao.TabStop = false;
+            btnCopiarCep.TabIndex = 4;
+            btnExportar.TabIndex = 5;
+            btnLimpar.TabIndex = 6;
+            btnSair.TabIndex = 7;
+            btnDiminuirFonte.TabIndex = 8;
+            btnAumentarFonte.TabIndex = 9;
         }
 
         private void FrmConsultaCEP_LocationChanged(object sender, EventArgs e)
