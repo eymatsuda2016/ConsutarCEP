@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -81,6 +82,36 @@ namespace ConsultaCEPs
             {
                 // A imagem é decorativa; a aplicação deve continuar funcionando sem ela.
                 LogTecnico.Registrar("Não foi possível carregar a marca d'água", excecao);
+            }
+
+            VerificarAtualizacaoAsync();
+        }
+
+        private async void VerificarAtualizacaoAsync()
+        {
+            try
+            {
+                Version versaoAtual = typeof(FrmConsultaCEP).Assembly.GetName().Version;
+                AtualizacaoDisponivel atualizacao = await AtualizacaoChecker.VerificarAsync(versaoAtual);
+                if (atualizacao == null || IsDisposed || string.IsNullOrWhiteSpace(atualizacao.Url))
+                {
+                    return;
+                }
+
+                DialogResult resposta = MessageBox.Show(
+                    string.Format("A versão {0} do Consultar CEP está disponível. Deseja abrir a página de atualização?", atualizacao.Versao),
+                    "Atualização disponível",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Information);
+
+                if (resposta == DialogResult.Yes)
+                {
+                    Process.Start(atualizacao.Url);
+                }
+            }
+            catch (Exception excecao)
+            {
+                LogTecnico.Registrar("Não foi possível verificar atualizações", excecao);
             }
         }
 
