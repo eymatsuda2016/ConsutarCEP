@@ -44,6 +44,7 @@
             this.txtObservacao = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.lblDesenvolvedor = new System.Windows.Forms.Label();
+            this.lblFonteDados = new System.Windows.Forms.Label();
             this.btnCopiarCep = new System.Windows.Forms.Button();
             this.btnLimpar = new System.Windows.Forms.Button();
             this.btnSair = new System.Windows.Forms.Button();
@@ -291,6 +292,17 @@
             this.lblDesenvolvedor.TabIndex = 6;
             this.lblDesenvolvedor.Text = "Desenvolvido Por Eduardo Y. Matsuda";
             // 
+            // lblFonteDados
+            // 
+            this.lblFonteDados.AutoSize = true;
+            this.lblFonteDados.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblFonteDados.ForeColor = System.Drawing.Color.Gray;
+            this.lblFonteDados.Location = new System.Drawing.Point(421, 486);
+            this.lblFonteDados.Name = "lblFonteDados";
+            this.lblFonteDados.Size = new System.Drawing.Size(76, 13);
+            this.lblFonteDados.TabIndex = 7;
+            this.lblFonteDados.Text = "Fonte: ViaCEP";
+            // 
             // FrmConsultaCEP
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -305,6 +317,7 @@
             this.Controls.Add(this.txtCEP);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.lblDesenvolvedor);
+            this.Controls.Add(this.lblFonteDados);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.MaximizeBox = false;
             this.Name = "FrmConsultaCEP";
@@ -340,6 +353,7 @@
         private System.Windows.Forms.Button btnLimpar;
         private System.Windows.Forms.Button btnSair;
         private System.Windows.Forms.Label lblDesenvolvedor;
+        private System.Windows.Forms.Label lblFonteDados;
     }
 }
 
