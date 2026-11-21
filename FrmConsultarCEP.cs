@@ -83,7 +83,7 @@ namespace ConsultaCEPs
 
             using (ImageAttributes atributos = new ImageAttributes())
             {
-                ColorMatrix matriz = new ColorMatrix { Matrix33 = 0.1f };
+                ColorMatrix matriz = new ColorMatrix { Matrix33 = 0.16f };
                 atributos.SetColorMatrix(matriz);
 
                 Rectangle destino = ClientRectangle;

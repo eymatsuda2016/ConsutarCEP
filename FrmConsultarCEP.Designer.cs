@@ -98,7 +98,7 @@
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Busca por endereço e resultado";
-            this.groupBox1.BackColor = System.Drawing.Color.Transparent;
+            this.groupBox1.BackColor = System.Drawing.Color.FromArgb(226, 240, 248);
             this.groupBox1.ForeColor = System.Drawing.Color.FromArgb(27, 64, 96);
             // 
             // txtEstado
@@ -348,7 +348,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.BackColor = System.Drawing.Color.FromArgb(220, 236, 247);
+            this.BackColor = System.Drawing.Color.FromArgb(205, 228, 243);
             this.ClientSize = new System.Drawing.Size(579, 544);
             this.Controls.Add(this.btnSair);
             this.Controls.Add(this.btnLimpar);
