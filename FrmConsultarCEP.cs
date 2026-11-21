@@ -16,6 +16,7 @@ using System.Net.NetworkInformation;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -30,6 +31,7 @@ namespace ConsultaCEPs
         private readonly Dictionary<string, DateTime> datasCacheRespostas = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
         private readonly List<string> ordemCacheRespostas = new List<string>();
         private bool atualizandoHistorico;
+        private CancellationTokenSource cancelamentoConsulta;
         private static readonly string arquivoHistorico = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "ConsultarCEP",
@@ -216,7 +218,7 @@ namespace ConsultaCEPs
             txtObservacao.AccessibleName = "Observação do CEP";
             txtObservacao.AccessibleDescription = "Detalhes adicionais do CEP selecionado.";
             btnConsultar.AccessibleName = "Consultar CEP";
-            btnConsultar.AccessibleDescription = "Executa a consulta do CEP ou do endereço informado.";
+            btnConsultar.AccessibleDescription = "Executa a consulta do CEP ou do endereço informado; durante uma consulta, cancela a operação.";
             btnConsultaLote.AccessibleName = "Consulta em lote";
             btnConsultaLote.AccessibleDescription = "Consulta vários CEPs a partir de um arquivo de texto e exporta os resultados em CSV.";
             btnCopiarCep.AccessibleName = "Copiar CEP";
@@ -397,6 +399,12 @@ namespace ConsultaCEPs
 
         private async void btnConsultar_Click(object sender, EventArgs e)
         {
+            if (cancelamentoConsulta != null)
+            {
+                cancelamentoConsulta.Cancel();
+                return;
+            }
+
             string cep = SomenteNumeros(txtCEP.Text);
             string estado = txtEstado.Text.Trim();
             string cidade = txtCidade.Text.Trim();
@@ -426,8 +434,10 @@ namespace ConsultaCEPs
             }
 
             string textoBotaoConsultar = btnConsultar.Text;
-            btnConsultar.Enabled = false;
-            btnConsultar.Text = "Consultando...";
+            cancelamentoConsulta = new CancellationTokenSource();
+            CancellationToken token = cancelamentoConsulta.Token;
+            btnConsultar.Enabled = true;
+            btnConsultar.Text = "Cancelar";
             btnConsultar.Cursor = Cursors.WaitCursor;
             btnConsultar.Refresh();
 
@@ -452,7 +462,7 @@ namespace ConsultaCEPs
                         return;
                     }
 
-                    using (HttpResponseMessage resposta = await clienteHttp.GetAsync(url))
+                    using (HttpResponseMessage resposta = await clienteHttp.GetAsync(url, token))
                     {
                         resposta.EnsureSuccessStatusCode();
                         LogTecnico.Registrar("Serviço ViaCEP respondeu com sucesso");
@@ -504,8 +514,16 @@ namespace ConsultaCEPs
             }
             catch (TaskCanceledException excecao)
             {
-                LogTecnico.Registrar("Consulta cancelada por tempo esgotado", excecao);
-                MessageBox.Show("A consulta demorou demais e foi cancelada.", "Tempo esgotado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                if (token.IsCancellationRequested)
+                {
+                    LogTecnico.Registrar("Consulta cancelada pelo usuário", excecao);
+                    MessageBox.Show("A consulta foi cancelada.", "Consulta cancelada", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    LogTecnico.Registrar("Consulta cancelada por tempo esgotado", excecao);
+                    MessageBox.Show("A consulta demorou demais e foi cancelada.", "Tempo esgotado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
             catch (HttpRequestException excecao)
             {
@@ -524,6 +542,12 @@ namespace ConsultaCEPs
             }
             finally
             {
+                if (cancelamentoConsulta != null)
+                {
+                    cancelamentoConsulta.Dispose();
+                    cancelamentoConsulta = null;
+                }
+
                 btnConsultar.Enabled = true;
                 btnConsultar.Text = textoBotaoConsultar;
                 btnConsultar.Cursor = Cursors.Hand;
@@ -532,6 +556,12 @@ namespace ConsultaCEPs
 
         private async void btnConsultaLote_Click(object sender, EventArgs e)
         {
+            if (cancelamentoConsulta != null)
+            {
+                cancelamentoConsulta.Cancel();
+                return;
+            }
+
             using (OpenFileDialog abrir = new OpenFileDialog())
             {
                 abrir.Title = "Selecionar arquivo com CEPs";
@@ -557,9 +587,12 @@ namespace ConsultaCEPs
                 }
 
                 List<ResultadoConsultaLote> resultados = new List<ResultadoConsultaLote>();
-                btnConsultaLote.Enabled = false;
+                cancelamentoConsulta = new CancellationTokenSource();
+                CancellationToken token = cancelamentoConsulta.Token;
+                btnConsultaLote.Enabled = true;
                 btnConsultar.Enabled = false;
                 btnConsultaLote.Cursor = Cursors.WaitCursor;
+                btnConsultaLote.Text = "Cancelar lote";
 
                 try
                 {
@@ -567,7 +600,7 @@ namespace ConsultaCEPs
                     {
                         btnConsultaLote.Text = string.Format("Lote {0}/{1}", indice + 1, ceps.Count);
                         btnConsultaLote.Refresh();
-                        resultados.Add(await ConsultarCepParaLoteAsync(ceps[indice]));
+                        resultados.Add(await ConsultarCepParaLoteAsync(ceps[indice], token));
                     }
 
                     using (SaveFileDialog salvar = new SaveFileDialog())
@@ -586,6 +619,11 @@ namespace ConsultaCEPs
                         }
                     }
                 }
+                catch (OperationCanceledException excecao)
+                {
+                    LogTecnico.Registrar("Consulta em lote cancelada pelo usuário", excecao);
+                    MessageBox.Show("A consulta em lote foi cancelada.", "Consulta cancelada", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
                 catch (Exception excecao)
                 {
                     LogTecnico.Registrar("Erro na consulta em lote", excecao);
@@ -593,6 +631,12 @@ namespace ConsultaCEPs
                 }
                 finally
                 {
+                    if (cancelamentoConsulta != null)
+                    {
+                        cancelamentoConsulta.Dispose();
+                        cancelamentoConsulta = null;
+                    }
+
                     btnConsultaLote.Enabled = true;
                     btnConsultar.Enabled = true;
                     btnConsultaLote.Text = "Consulta em lote";
@@ -601,7 +645,7 @@ namespace ConsultaCEPs
             }
         }
 
-        private async Task<ResultadoConsultaLote> ConsultarCepParaLoteAsync(string cep)
+        private async Task<ResultadoConsultaLote> ConsultarCepParaLoteAsync(string cep, CancellationToken token)
         {
             string cepFormatado = cep.Insert(5, "-");
             string url = string.Format("https://viacep.com.br/ws/{0}/json/", cep);
@@ -616,7 +660,7 @@ namespace ConsultaCEPs
                         return ResultadoConsultaLote.Erro(cepFormatado, "Sem conexão");
                     }
 
-                    using (HttpResponseMessage resposta = await clienteHttp.GetAsync(url))
+                    using (HttpResponseMessage resposta = await clienteHttp.GetAsync(url, token))
                     {
                         resposta.EnsureSuccessStatusCode();
                         json = await resposta.Content.ReadAsStringAsync();
@@ -644,6 +688,11 @@ namespace ConsultaCEPs
             }
             catch (TaskCanceledException excecao)
             {
+                if (token.IsCancellationRequested)
+                {
+                    throw;
+                }
+
                 LogTecnico.Registrar("CEP em lote expirou por tempo esgotado", excecao);
                 return ResultadoConsultaLote.Erro(cepFormatado, "Tempo esgotado");
             }
