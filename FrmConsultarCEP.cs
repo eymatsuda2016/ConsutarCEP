@@ -24,6 +24,10 @@ namespace ConsultaCEPs
         private Bitmap marcaDagua;
         private readonly List<string> historicoCEPs = new List<string>();
         private bool atualizandoHistorico;
+        private float escalaFonte = 1.0f;
+        private const float EscalaFonteMinima = 0.85f;
+        private const float EscalaFonteMaxima = 1.25f;
+        private const float TamanhoFonteBase = 8.25f;
 
         private static readonly HttpClient clienteHttp = new HttpClient
         {
@@ -129,6 +133,8 @@ namespace ConsultaCEPs
             ConfigurarEfeitoHover(btnSair, Color.FromArgb(27, 64, 96), Color.FromArgb(48, 94, 130));
             ConfigurarEfeitoHover(btnCopiarCep, Color.FromArgb(63, 145, 205), Color.FromArgb(92, 169, 220));
             ConfigurarEfeitoHover(btnExportar, Color.FromArgb(72, 137, 104), Color.FromArgb(95, 164, 126));
+            ConfigurarEfeitoHover(btnDiminuirFonte, Color.FromArgb(92, 155, 213), Color.FromArgb(124, 181, 230));
+            ConfigurarEfeitoHover(btnAumentarFonte, Color.FromArgb(38, 115, 170), Color.FromArgb(63, 145, 205));
             btnCopiarCep.Enabled = false;
             btnExportar.Enabled = false;
             AtualizarLimitesMaximizacao();
@@ -197,6 +203,37 @@ namespace ConsultaCEPs
             botao.BackColor = corNormal;
             botao.MouseEnter += delegate { botao.BackColor = corHover; };
             botao.MouseLeave += delegate { botao.BackColor = corNormal; };
+        }
+
+        private void btnDiminuirFonte_Click(object sender, EventArgs e)
+        {
+            escalaFonte = Math.Max(EscalaFonteMinima, escalaFonte - 0.05f);
+            AplicarEscalaFonte();
+        }
+
+        private void btnAumentarFonte_Click(object sender, EventArgs e)
+        {
+            escalaFonte = Math.Min(EscalaFonteMaxima, escalaFonte + 0.05f);
+            AplicarEscalaFonte();
+        }
+
+        private void AplicarEscalaFonte()
+        {
+            AplicarEscalaFonte(this, escalaFonte);
+        }
+
+        private static void AplicarEscalaFonte(Control controle, float escala)
+        {
+            if (controle == null)
+            {
+                return;
+            }
+
+            controle.Font = new Font(controle.Font.FontFamily, TamanhoFonteBase * escala, controle.Font.Style);
+            foreach (Control filho in controle.Controls)
+            {
+                AplicarEscalaFonte(filho, escala);
+            }
         }
 
         private void txtEstado_TextChanged(object sender, EventArgs e)

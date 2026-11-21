@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.label1 = new System.Windows.Forms.Label();
             this.txtCEP = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -52,6 +53,10 @@
             this.btnLimpar = new System.Windows.Forms.Button();
             this.btnSair = new System.Windows.Forms.Button();
             this.btnConsultar = new System.Windows.Forms.Button();
+            this.lblTamanhoFonte = new System.Windows.Forms.Label();
+            this.btnDiminuirFonte = new System.Windows.Forms.Button();
+            this.btnAumentarFonte = new System.Windows.Forms.Button();
+            this.toolTipFonte = new System.Windows.Forms.ToolTip(this.components);
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -344,6 +349,48 @@
             this.lblFonteDados.TabIndex = 7;
             this.lblFonteDados.Text = "Fonte: ViaCEP";
             // 
+            // lblTamanhoFonte
+            // 
+            this.lblTamanhoFonte.AutoSize = true;
+            this.lblTamanhoFonte.ForeColor = System.Drawing.Color.FromArgb(27, 64, 96);
+            this.lblTamanhoFonte.Location = new System.Drawing.Point(292, 528);
+            this.lblTamanhoFonte.Name = "lblTamanhoFonte";
+            this.lblTamanhoFonte.Size = new System.Drawing.Size(36, 13);
+            this.lblTamanhoFonte.TabIndex = 8;
+            this.lblTamanhoFonte.Text = "Texto:";
+            // 
+            // btnDiminuirFonte
+            // 
+            this.btnDiminuirFonte.BackColor = System.Drawing.Color.FromArgb(92, 155, 213);
+            this.btnDiminuirFonte.FlatAppearance.BorderSize = 0;
+            this.btnDiminuirFonte.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnDiminuirFonte.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnDiminuirFonte.ForeColor = System.Drawing.Color.White;
+            this.btnDiminuirFonte.Location = new System.Drawing.Point(332, 524);
+            this.btnDiminuirFonte.Name = "btnDiminuirFonte";
+            this.btnDiminuirFonte.Size = new System.Drawing.Size(28, 21);
+            this.btnDiminuirFonte.TabIndex = 9;
+            this.btnDiminuirFonte.Text = "A-";
+            this.btnDiminuirFonte.UseVisualStyleBackColor = false;
+            this.btnDiminuirFonte.Click += new System.EventHandler(this.btnDiminuirFonte_Click);
+            this.toolTipFonte.SetToolTip(this.btnDiminuirFonte, "Diminuir tamanho da fonte");
+            // 
+            // btnAumentarFonte
+            // 
+            this.btnAumentarFonte.BackColor = System.Drawing.Color.FromArgb(38, 115, 170);
+            this.btnAumentarFonte.FlatAppearance.BorderSize = 0;
+            this.btnAumentarFonte.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnAumentarFonte.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnAumentarFonte.ForeColor = System.Drawing.Color.White;
+            this.btnAumentarFonte.Location = new System.Drawing.Point(365, 524);
+            this.btnAumentarFonte.Name = "btnAumentarFonte";
+            this.btnAumentarFonte.Size = new System.Drawing.Size(28, 21);
+            this.btnAumentarFonte.TabIndex = 10;
+            this.btnAumentarFonte.Text = "A+";
+            this.btnAumentarFonte.UseVisualStyleBackColor = false;
+            this.btnAumentarFonte.Click += new System.EventHandler(this.btnAumentarFonte_Click);
+            this.toolTipFonte.SetToolTip(this.btnAumentarFonte, "Aumentar tamanho da fonte");
+            // 
             // FrmConsultaCEP
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -360,6 +407,9 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.lblDesenvolvedor);
             this.Controls.Add(this.lblFonteDados);
+            this.Controls.Add(this.lblTamanhoFonte);
+            this.Controls.Add(this.btnDiminuirFonte);
+            this.Controls.Add(this.btnAumentarFonte);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.MaximizeBox = true;
             this.KeyPreview = true;
@@ -401,6 +451,10 @@
         private System.Windows.Forms.Button btnSair;
         private System.Windows.Forms.Label lblDesenvolvedor;
         private System.Windows.Forms.Label lblFonteDados;
+        private System.Windows.Forms.Label lblTamanhoFonte;
+        private System.Windows.Forms.Button btnDiminuirFonte;
+        private System.Windows.Forms.Button btnAumentarFonte;
+        private System.Windows.Forms.ToolTip toolTipFonte;
     }
 }
 
