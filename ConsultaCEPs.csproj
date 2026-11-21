@@ -89,6 +89,9 @@
     <None Include="Resources\sair.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\marca_dagua_trabalhador_postal.jpg" />
+  </ItemGroup>
+  <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

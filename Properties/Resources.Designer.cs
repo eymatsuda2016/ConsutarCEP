@@ -89,5 +89,15 @@ namespace ConsultaCEPs.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap marca_dagua_trabalhador_postal {
+            get {
+                object obj = ResourceManager.GetObject("marca_dagua_trabalhador_postal", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

@@ -41,6 +41,8 @@
             this.label5 = new System.Windows.Forms.Label();
             this.cmbCEPs = new System.Windows.Forms.ComboBox();
             this.label6 = new System.Windows.Forms.Label();
+            this.txtObservacao = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.lblDesenvolvedor = new System.Windows.Forms.Label();
             this.btnLimpar = new System.Windows.Forms.Button();
             this.btnSair = new System.Windows.Forms.Button();
@@ -70,6 +72,8 @@
             // 
             this.groupBox1.Controls.Add(this.cmbCEPs);
             this.groupBox1.Controls.Add(this.label6);
+            this.groupBox1.Controls.Add(this.txtObservacao);
+            this.groupBox1.Controls.Add(this.label7);
             this.groupBox1.Controls.Add(this.txtLogradouro);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.txtBairro);
@@ -80,11 +84,11 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Location = new System.Drawing.Point(25, 81);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(529, 302);
+            this.groupBox1.Size = new System.Drawing.Size(529, 338);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Busca por endereço e resultado";
-            this.groupBox1.BackColor = System.Drawing.Color.White;
+            this.groupBox1.BackColor = System.Drawing.Color.Transparent;
             this.groupBox1.ForeColor = System.Drawing.Color.FromArgb(27, 64, 96);
             // 
             // txtEstado
@@ -124,7 +128,7 @@
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(43, 13);
             this.label3.TabIndex = 4;
-            this.label3.Text = "Cidade (obrigatório):";
+            this.label3.Text = "Localidade (obrigatório):";
             // 
             // txtBairro
             // 
@@ -143,7 +147,7 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(37, 13);
             this.label4.TabIndex = 6;
-            this.label4.Text = "Bairro (resultado):";
+            this.label4.Text = "Bairro/Distrito (resultado):";
             // 
             // txtLogradouro
             // 
@@ -161,7 +165,7 @@
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(61, 13);
             this.label5.TabIndex = 8;
-            this.label5.Text = "Logradouro (rua, avenida etc.):";
+            this.label5.Text = "Logradouro/Nome (rua, avenida etc.):";
             // 
             // cmbCEPs
             // 
@@ -173,6 +177,7 @@
             this.cmbCEPs.Size = new System.Drawing.Size(492, 21);
             this.cmbCEPs.TabIndex = 11;
             this.cmbCEPs.SelectedIndexChanged += new System.EventHandler(this.cmbCEPs_SelectedIndexChanged);
+            this.cmbCEPs.SelectionChangeCommitted += new System.EventHandler(this.cmbCEPs_SelectionChangeCommitted);
             // 
             // label6
             // 
@@ -184,6 +189,25 @@
             this.label6.TabIndex = 10;
             this.label6.Text = "CEPs encontrados (se houver mais de um):";
             // 
+            // txtObservacao
+            // 
+            this.txtObservacao.BackColor = System.Drawing.Color.FromArgb(232, 241, 248);
+            this.txtObservacao.Location = new System.Drawing.Point(6, 306);
+            this.txtObservacao.Name = "txtObservacao";
+            this.txtObservacao.ReadOnly = true;
+            this.txtObservacao.Size = new System.Drawing.Size(492, 20);
+            this.txtObservacao.TabIndex = 13;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.ForeColor = System.Drawing.Color.FromArgb(27, 64, 96);
+            this.label7.Location = new System.Drawing.Point(6, 290);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(105, 13);
+            this.label7.TabIndex = 12;
+            this.label7.Text = "Observação do CEP:";
+            // 
             // btnLimpar
             // 
             this.btnLimpar.BackgroundImage = global::ConsultaCEPs.Properties.Resources.limpar;
@@ -194,7 +218,7 @@
             this.btnLimpar.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnLimpar.ForeColor = System.Drawing.Color.White;
             this.btnLimpar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnLimpar.Location = new System.Drawing.Point(249, 414);
+            this.btnLimpar.Location = new System.Drawing.Point(249, 450);
             this.btnLimpar.Name = "btnLimpar";
             this.btnLimpar.Size = new System.Drawing.Size(137, 30);
             this.btnLimpar.TabIndex = 4;
@@ -212,7 +236,7 @@
             this.btnSair.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnSair.ForeColor = System.Drawing.Color.White;
             this.btnSair.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnSair.Location = new System.Drawing.Point(406, 414);
+            this.btnSair.Location = new System.Drawing.Point(406, 450);
             this.btnSair.Name = "btnSair";
             this.btnSair.Size = new System.Drawing.Size(137, 30);
             this.btnSair.TabIndex = 5;
@@ -240,7 +264,7 @@
             this.lblDesenvolvedor.AutoSize = true;
             this.lblDesenvolvedor.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblDesenvolvedor.ForeColor = System.Drawing.Color.Gray;
-            this.lblDesenvolvedor.Location = new System.Drawing.Point(25, 450);
+            this.lblDesenvolvedor.Location = new System.Drawing.Point(25, 486);
             this.lblDesenvolvedor.Name = "lblDesenvolvedor";
             this.lblDesenvolvedor.Size = new System.Drawing.Size(193, 13);
             this.lblDesenvolvedor.TabIndex = 6;
@@ -250,8 +274,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(235, 245, 252);
-            this.ClientSize = new System.Drawing.Size(579, 466);
+            this.BackColor = System.Drawing.Color.FromArgb(220, 236, 247);
+            this.ClientSize = new System.Drawing.Size(579, 502);
             this.Controls.Add(this.btnSair);
             this.Controls.Add(this.btnLimpar);
             this.Controls.Add(this.btnConsultar);
@@ -281,6 +305,8 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox cmbCEPs;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox txtObservacao;
+        private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox txtBairro;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox txtCidade;

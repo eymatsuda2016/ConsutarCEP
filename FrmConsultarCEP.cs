@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -19,6 +20,7 @@ namespace ConsultaCEPs
     public partial class FrmConsultaCEP : Form
     {
         private ViaCepEndereco[] enderecosEncontrados = new ViaCepEndereco[0];
+        private Bitmap marcaDagua;
 
         private static readonly HttpClient clienteHttp = new HttpClient
         {
@@ -29,7 +31,72 @@ namespace ConsultaCEPs
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             InitializeComponent();
+            DoubleBuffered = true;
+            Paint += FrmConsultaCEP_Paint;
+            Shown += FrmConsultaCEP_Shown;
+            FormClosed += FrmConsultaCEP_FormClosed;
             Icon = CriarIconeCabecalho();
+        }
+
+        private async void FrmConsultaCEP_Shown(object sender, EventArgs e)
+        {
+            try
+            {
+                Bitmap imagem = await Task.Run(() => new Bitmap(Properties.Resources.marca_dagua_trabalhador_postal));
+                if (IsDisposed)
+                {
+                    imagem.Dispose();
+                    return;
+                }
+
+                marcaDagua = imagem;
+                Invalidate();
+            }
+            catch
+            {
+                // A imagem é decorativa; a aplicação deve continuar funcionando sem ela.
+            }
+        }
+
+        private void FrmConsultaCEP_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (marcaDagua != null)
+            {
+                marcaDagua.Dispose();
+                marcaDagua = null;
+            }
+        }
+
+        private void FrmConsultaCEP_Paint(object sender, PaintEventArgs e)
+        {
+            if (marcaDagua == null)
+            {
+                return;
+            }
+
+            using (ImageAttributes atributos = new ImageAttributes())
+            {
+                ColorMatrix matriz = new ColorMatrix { Matrix33 = 0.1f };
+                atributos.SetColorMatrix(matriz);
+
+                Rectangle destino = ClientRectangle;
+                float proporcaoDestino = (float)destino.Width / destino.Height;
+                float proporcaoImagem = (float)marcaDagua.Width / marcaDagua.Height;
+                Rectangle origem;
+
+                if (proporcaoImagem > proporcaoDestino)
+                {
+                    int larguraRecorte = (int)(marcaDagua.Height * proporcaoDestino);
+                    origem = new Rectangle((marcaDagua.Width - larguraRecorte) / 2, 0, larguraRecorte, marcaDagua.Height);
+                }
+                else
+                {
+                    int alturaRecorte = (int)(marcaDagua.Width / proporcaoDestino);
+                    origem = new Rectangle(0, (marcaDagua.Height - alturaRecorte) / 2, marcaDagua.Width, alturaRecorte);
+                }
+
+                e.Graphics.DrawImage(marcaDagua, destino, origem.X, origem.Y, origem.Width, origem.Height, GraphicsUnit.Pixel, atributos);
+            }
         }
 
         private static Icon CriarIconeCabecalho()
@@ -52,7 +119,15 @@ namespace ConsultaCEPs
             ConfigurarEfeitoHover(btnConsultar, Color.FromArgb(38, 115, 170), Color.FromArgb(63, 145, 205));
             ConfigurarEfeitoHover(btnLimpar, Color.FromArgb(92, 155, 213), Color.FromArgb(124, 181, 230));
             ConfigurarEfeitoHover(btnSair, Color.FromArgb(27, 64, 96), Color.FromArgb(48, 94, 130));
+            btnConsultar.Image = CriarImagemBotaoConsultar();
+            btnConsultar.ImageAlign = ContentAlignment.MiddleLeft;
+            btnConsultar.TextImageRelation = TextImageRelation.ImageBeforeText;
             txtCEP.Focus();
+        }
+
+        private static Bitmap CriarImagemBotaoConsultar()
+        {
+            return new Bitmap(Properties.Resources.busca_cep, new Size(42, 12));
         }
 
         private static void ConfigurarEfeitoHover(Button botao, Color corNormal, Color corHover)
@@ -121,6 +196,7 @@ namespace ConsultaCEPs
                     }
 
                     enderecosEncontrados = enderecos;
+                    label6.Text = string.Format("CEPs encontrados: {0} (selecione um):", enderecos.Length);
                     cmbCEPs.DataSource = null;
                     cmbCEPs.DisplayMember = "Cep";
                     cmbCEPs.DataSource = enderecosEncontrados;
@@ -134,6 +210,7 @@ namespace ConsultaCEPs
                 else
                 {
                     enderecosEncontrados = new ViaCepEndereco[0];
+                    label6.Text = "CEPs encontrados (se houver mais de um):";
                     cmbCEPs.DataSource = null;
                     ViaCepEndereco endereco = Desserializar<ViaCepEndereco>(json);
 
@@ -184,19 +261,46 @@ namespace ConsultaCEPs
             txtCidade.Text = endereco.Localidade;
             txtBairro.Text = endereco.Bairro;
             txtLogradouro.Text = endereco.Logradouro;
+            int indiceResultado = Array.IndexOf(enderecosEncontrados, endereco);
+            string observacao = enderecosEncontrados.Length > 0
+                ? string.Format("CEP {0} | Resultado {1} de {2}. ", endereco.Cep, indiceResultado + 1, enderecosEncontrados.Length)
+                : string.Format("CEP {0}. ", endereco.Cep);
+
+            observacao += string.IsNullOrWhiteSpace(endereco.Complemento)
+                ? "Faixa numérica não informada pela base de CEP."
+                : "Complemento: " + endereco.Complemento.Trim() + ".";
+
+            if (!string.IsNullOrWhiteSpace(endereco.Unidade))
+            {
+                observacao += " Unidade: " + endereco.Unidade.Trim() + ".";
+            }
+
+            txtObservacao.Text = observacao;
         }
 
         private void LimparResultado()
         {
             enderecosEncontrados = new ViaCepEndereco[0];
+            label6.Text = "CEPs encontrados (se houver mais de um):";
             cmbCEPs.DataSource = null;
             txtEstado.Clear();
             txtCidade.Clear();
             txtBairro.Clear();
             txtLogradouro.Clear();
+            txtObservacao.Clear();
         }
 
         private void cmbCEPs_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            AtualizarCepSelecionado();
+        }
+
+        private void cmbCEPs_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            AtualizarCepSelecionado();
+        }
+
+        private void AtualizarCepSelecionado()
         {
             ViaCepEndereco endereco = cmbCEPs.SelectedItem as ViaCepEndereco;
             if (endereco != null)
@@ -248,6 +352,8 @@ namespace ConsultaCEPs
         [DataMember(Name = "cep")] public string Cep { get; set; }
         [DataMember(Name = "logradouro")] public string Logradouro { get; set; }
         [DataMember(Name = "bairro")] public string Bairro { get; set; }
+        [DataMember(Name = "complemento")] public string Complemento { get; set; }
+        [DataMember(Name = "unidade")] public string Unidade { get; set; }
         [DataMember(Name = "localidade")] public string Localidade { get; set; }
         [DataMember(Name = "uf")] public string Uf { get; set; }
     }
