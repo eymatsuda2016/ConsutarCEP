@@ -579,7 +579,7 @@ namespace ConsultaCEPs
             using (SaveFileDialog dialogo = new SaveFileDialog())
             {
                 dialogo.Title = "Exportar consulta de CEP";
-                dialogo.Filter = "Arquivo de texto (*.txt)|*.txt|Todos os arquivos (*.*)|*.*";
+                dialogo.Filter = "Arquivo de texto (*.txt)|*.txt|Arquivo CSV (*.csv)|*.csv|Todos os arquivos (*.*)|*.*";
                 dialogo.DefaultExt = "txt";
                 dialogo.AddExtension = true;
                 dialogo.FileName = "ConsultaCEP_" + cep.Replace("-", "") + ".txt";
@@ -589,19 +589,23 @@ namespace ConsultaCEPs
                     return;
                 }
 
-                string conteudo = string.Format(
-                    "Consulta de CEP{0}{0}CEP: {1}{0}UF: {2}{0}Localidade: {3}{0}Bairro/Distrito: {4}{0}Logradouro: {5}{0}Observação: {6}{0}{0}Fonte: ViaCEP",
-                    Environment.NewLine,
-                    txtCEP.Text,
-                    txtEstado.Text,
-                    txtCidade.Text,
-                    txtBairro.Text,
-                    txtLogradouro.Text,
-                    txtObservacao.Text);
+                bool exportarCsv = string.Equals(Path.GetExtension(dialogo.FileName), ".csv", StringComparison.OrdinalIgnoreCase);
+                string conteudo = exportarCsv
+                    ? CriarConteudoCsv()
+                    : string.Format(
+                        "Consulta de CEP{0}{0}CEP: {1}{0}UF: {2}{0}Localidade: {3}{0}Bairro/Distrito: {4}{0}Logradouro: {5}{0}Observação: {6}{0}{0}Fonte: ViaCEP",
+                        Environment.NewLine,
+                        txtCEP.Text,
+                        txtEstado.Text,
+                        txtCidade.Text,
+                        txtBairro.Text,
+                        txtLogradouro.Text,
+                        txtObservacao.Text);
 
                 try
                 {
                     File.WriteAllText(dialogo.FileName, conteudo, Encoding.UTF8);
+                    LogTecnico.Registrar(exportarCsv ? "Consulta exportada em CSV" : "Consulta exportada em TXT");
                     MessageBox.Show("Consulta exportada com sucesso.", "Exportação concluída", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (IOException excecao)
@@ -615,6 +619,24 @@ namespace ConsultaCEPs
                     MessageBox.Show("Não há permissão para salvar nesse local. Escolha outra pasta e tente novamente.", "Acesso negado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
+        }
+
+        private string CriarConteudoCsv()
+        {
+            string[] cabecalho = { "CEP", "UF", "Localidade", "Bairro/Distrito", "Logradouro", "Observação" };
+            string[] valores = { txtCEP.Text, txtEstado.Text, txtCidade.Text, txtBairro.Text, txtLogradouro.Text, txtObservacao.Text };
+            return EscaparLinhaCsv(cabecalho) + Environment.NewLine + EscaparLinhaCsv(valores) + Environment.NewLine;
+        }
+
+        private static string EscaparLinhaCsv(IEnumerable<string> valores)
+        {
+            return string.Join(";", valores.Select(EscaparCampoCsv));
+        }
+
+        private static string EscaparCampoCsv(string valor)
+        {
+            string campo = valor ?? string.Empty;
+            return "\"" + campo.Replace("\"", "\"\"").Replace("\r", " ").Replace("\n", " ") + "\"";
         }
 
         private void cmbCEPs_SelectedIndexChanged(object sender, EventArgs e)
