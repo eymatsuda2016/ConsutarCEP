@@ -44,6 +44,9 @@ namespace ConsultaCEPs
 
         private async void FrmConsultaCEP_Shown(object sender, EventArgs e)
         {
+            WindowState = FormWindowState.Normal;
+            AtualizarLimitesMaximizacao();
+
             try
             {
                 Bitmap imagem = await Task.Run(() => new Bitmap(Properties.Resources.marca_dagua_trabalhador_postal));
@@ -117,6 +120,7 @@ namespace ConsultaCEPs
 
         private void FrmConsultaCEP_Load(object sender, EventArgs e)
         {
+            WindowState = FormWindowState.Normal;
             ArredondarBotao(btnConsultar, 12);
             ArredondarBotao(btnLimpar, 10);
             ArredondarBotao(btnSair, 10);
