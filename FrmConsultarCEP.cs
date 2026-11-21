@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -31,6 +32,10 @@ namespace ConsultaCEPs
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "ConsultarCEP",
             "historico-ceps.txt");
+        private static readonly string arquivoEscalaFonte = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "ConsultarCEP",
+            "escala-fonte.txt");
         private float escalaFonte = 1.0f;
         private const float EscalaFonteMinima = 0.85f;
         private const float EscalaFonteMaxima = 1.25f;
@@ -79,6 +84,7 @@ namespace ConsultaCEPs
 
         private void FrmConsultaCEP_FormClosed(object sender, FormClosedEventArgs e)
         {
+            SalvarEscalaFonte();
             if (marcaDagua != null)
             {
                 marcaDagua.Dispose();
@@ -146,6 +152,8 @@ namespace ConsultaCEPs
             btnCopiarCep.Enabled = false;
             btnExportar.Enabled = false;
             CarregarHistorico();
+            CarregarEscalaFonte();
+            AplicarEscalaFonte();
             AtualizarLimitesMaximizacao();
             btnConsultar.Image = CriarImagemBotaoConsultar();
             btnConsultar.ImageAlign = ContentAlignment.MiddleLeft;
@@ -218,12 +226,50 @@ namespace ConsultaCEPs
         {
             escalaFonte = Math.Max(EscalaFonteMinima, escalaFonte - 0.05f);
             AplicarEscalaFonte();
+            SalvarEscalaFonte();
         }
 
         private void btnAumentarFonte_Click(object sender, EventArgs e)
         {
             escalaFonte = Math.Min(EscalaFonteMaxima, escalaFonte + 0.05f);
             AplicarEscalaFonte();
+            SalvarEscalaFonte();
+        }
+
+        private void CarregarEscalaFonte()
+        {
+            try
+            {
+                if (!File.Exists(arquivoEscalaFonte))
+                {
+                    return;
+                }
+
+                float escalaSalva;
+                string conteudo = File.ReadAllText(arquivoEscalaFonte).Trim();
+                if (float.TryParse(conteudo, NumberStyles.Float, CultureInfo.InvariantCulture, out escalaSalva))
+                {
+                    escalaFonte = Math.Max(EscalaFonteMinima, Math.Min(EscalaFonteMaxima, escalaSalva));
+                }
+            }
+            catch (Exception excecao)
+            {
+                LogTecnico.Registrar("Não foi possível carregar o tamanho da fonte", excecao);
+            }
+        }
+
+        private void SalvarEscalaFonte()
+        {
+            try
+            {
+                string pasta = Path.GetDirectoryName(arquivoEscalaFonte);
+                Directory.CreateDirectory(pasta);
+                File.WriteAllText(arquivoEscalaFonte, escalaFonte.ToString(CultureInfo.InvariantCulture));
+            }
+            catch (Exception excecao)
+            {
+                LogTecnico.Registrar("Não foi possível salvar o tamanho da fonte", excecao);
+            }
         }
 
         private void AplicarEscalaFonte()
