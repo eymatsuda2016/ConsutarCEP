@@ -24,6 +24,10 @@ namespace ConsultaCEPs
         private Bitmap marcaDagua;
         private readonly List<string> historicoCEPs = new List<string>();
         private bool atualizandoHistorico;
+        private static readonly string arquivoHistorico = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "ConsultarCEP",
+            "historico-ceps.txt");
         private float escalaFonte = 1.0f;
         private const float EscalaFonteMinima = 0.85f;
         private const float EscalaFonteMaxima = 1.25f;
@@ -138,6 +142,7 @@ namespace ConsultaCEPs
             ConfigurarEfeitoHover(btnAumentarFonte, Color.FromArgb(38, 115, 170), Color.FromArgb(63, 145, 205));
             btnCopiarCep.Enabled = false;
             btnExportar.Enabled = false;
+            CarregarHistorico();
             AtualizarLimitesMaximizacao();
             btnConsultar.Image = CriarImagemBotaoConsultar();
             btnConsultar.ImageAlign = ContentAlignment.MiddleLeft;
@@ -441,6 +446,57 @@ namespace ConsultaCEPs
             cmbHistorico.DataSource = null;
             cmbHistorico.DataSource = historicoCEPs.ToList();
             atualizandoHistorico = false;
+            SalvarHistorico();
+        }
+
+        private void CarregarHistorico()
+        {
+            try
+            {
+                if (!File.Exists(arquivoHistorico))
+                {
+                    return;
+                }
+
+                historicoCEPs.Clear();
+                foreach (string linha in File.ReadAllLines(arquivoHistorico, Encoding.UTF8))
+                {
+                    string cep = CepUtil.SomenteNumeros(linha);
+                    if (cep.Length == 8 && !historicoCEPs.Contains(cep.Insert(5, "-")))
+                    {
+                        historicoCEPs.Add(cep.Insert(5, "-"));
+                    }
+
+                    if (historicoCEPs.Count == 10)
+                    {
+                        break;
+                    }
+                }
+
+                atualizandoHistorico = true;
+                cmbHistorico.DataSource = null;
+                cmbHistorico.DataSource = historicoCEPs.ToList();
+                atualizandoHistorico = false;
+                LogTecnico.Registrar("Histórico de CEPs carregado");
+            }
+            catch (Exception excecao)
+            {
+                LogTecnico.Registrar("Não foi possível carregar o histórico de CEPs", excecao);
+            }
+        }
+
+        private void SalvarHistorico()
+        {
+            try
+            {
+                string pasta = Path.GetDirectoryName(arquivoHistorico);
+                Directory.CreateDirectory(pasta);
+                File.WriteAllLines(arquivoHistorico, historicoCEPs, Encoding.UTF8);
+            }
+            catch (Exception excecao)
+            {
+                LogTecnico.Registrar("Não foi possível salvar o histórico de CEPs", excecao);
+            }
         }
 
         private void cmbHistorico_SelectedIndexChanged(object sender, EventArgs e)
