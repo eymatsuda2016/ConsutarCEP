@@ -1,5 +1,7 @@
 # Instalador do Consultar CEP
 
+Para criar o instalador gráfico, execute `Criar-Instalador.ps1` após compilar a configuração `Release`. O resultado será `bin\Release\ConsultarCEP-Setup.exe`.
+
 1. Compile a configuração `Release` do projeto.
 2. Execute `Instalar-ConsultarCEP.cmd` com duplo clique.
 3. O instalador cria atalhos na Área de Trabalho e no menu Iniciar.

@@ -4,9 +4,13 @@ $appName = 'ConsultarCEP'
 $displayVersion = '1.0.0'
 $installDir = Join-Path $env:LOCALAPPDATA 'Programs\ConsultarCEP'
 $sourceDir = Join-Path $PSScriptRoot '..\bin\Release'
-$sourceDir = (Resolve-Path -LiteralPath $sourceDir).Path
 $exeName = 'ConsultaCEPs.exe'
 $sourceExe = Join-Path $sourceDir $exeName
+if (-not (Test-Path -LiteralPath $sourceExe)) {
+    $sourceDir = $PSScriptRoot
+    $sourceExe = Join-Path $sourceDir $exeName
+}
+$sourceDir = (Resolve-Path -LiteralPath $sourceDir).Path
 $targetExe = Join-Path $installDir $exeName
 $uninstallerSource = Join-Path $PSScriptRoot 'Desinstalar-ConsultarCEP.ps1'
 $uninstallerTarget = Join-Path $installDir 'Desinstalar-ConsultarCEP.ps1'
