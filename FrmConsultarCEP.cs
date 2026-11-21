@@ -26,6 +26,7 @@ namespace ConsultaCEPs
         private Bitmap marcaDagua;
         private readonly List<string> historicoCEPs = new List<string>();
         private readonly Dictionary<string, string> cacheRespostas = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, DateTime> datasCacheRespostas = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
         private readonly List<string> ordemCacheRespostas = new List<string>();
         private bool atualizandoHistorico;
         private static readonly string arquivoHistorico = Path.Combine(
@@ -40,6 +41,7 @@ namespace ConsultaCEPs
         private const float EscalaFonteMinima = 0.85f;
         private const float EscalaFonteMaxima = 1.25f;
         private const float TamanhoFonteBase = 8.25f;
+        private static readonly TimeSpan ValidadeCache = TimeSpan.FromMinutes(10);
 
         private static readonly HttpClient clienteHttp = new HttpClient
         {
@@ -354,7 +356,7 @@ namespace ConsultaCEPs
                     : string.Format("https://viacep.com.br/ws/{0}/json/", cep);
 
                 string json;
-                if (cacheRespostas.TryGetValue(url, out json))
+                if (TentarObterDoCache(url, out json))
                 {
                     LogTecnico.Registrar("Consulta atendida pelo cache recente");
                 }
@@ -454,6 +456,7 @@ namespace ConsultaCEPs
         private void ArmazenarNoCache(string chave, string resposta)
         {
             cacheRespostas[chave] = resposta;
+            datasCacheRespostas[chave] = DateTime.UtcNow;
             ordemCacheRespostas.Remove(chave);
             ordemCacheRespostas.Add(chave);
 
@@ -462,9 +465,33 @@ namespace ConsultaCEPs
                 string chaveMaisAntiga = ordemCacheRespostas[0];
                 ordemCacheRespostas.RemoveAt(0);
                 cacheRespostas.Remove(chaveMaisAntiga);
+                datasCacheRespostas.Remove(chaveMaisAntiga);
             }
 
             LogTecnico.Registrar("Resposta armazenada no cache recente");
+        }
+
+        private bool TentarObterDoCache(string chave, out string resposta)
+        {
+            DateTime dataArmazenamento;
+            if (cacheRespostas.TryGetValue(chave, out resposta) &&
+                datasCacheRespostas.TryGetValue(chave, out dataArmazenamento))
+            {
+                if (DateTime.UtcNow - dataArmazenamento <= ValidadeCache)
+                {
+                    return true;
+                }
+
+                cacheRespostas.Remove(chave);
+                datasCacheRespostas.Remove(chave);
+                ordemCacheRespostas.Remove(chave);
+                resposta = null;
+                LogTecnico.Registrar("Entrada do cache expirada após 10 minutos");
+                return false;
+            }
+
+            resposta = null;
+            return false;
         }
 
         private void btnSair_Click(object sender, EventArgs e)
