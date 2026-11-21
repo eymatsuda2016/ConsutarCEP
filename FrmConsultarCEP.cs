@@ -194,11 +194,7 @@ namespace ConsultaCEPs
 
         private void txtCEP_Leave(object sender, EventArgs e)
         {
-            string cep = SomenteNumeros(txtCEP.Text);
-            if (cep.Length == 8)
-            {
-                txtCEP.Text = cep.Insert(5, "-");
-            }
+            txtCEP.Text = CepUtil.Formatar(txtCEP.Text);
         }
 
         private async void btnConsultar_Click(object sender, EventArgs e)
@@ -362,7 +358,7 @@ namespace ConsultaCEPs
 
         private void RegistrarHistorico(string cep)
         {
-            string cepFormatado = SomenteNumeros(cep);
+            string cepFormatado = CepUtil.SomenteNumeros(cep);
             if (cepFormatado.Length != 8)
             {
                 return;
@@ -493,12 +489,7 @@ namespace ConsultaCEPs
 
         private static string SomenteNumeros(string valor)
         {
-            StringBuilder numeros = new StringBuilder();
-            foreach (char caractere in valor)
-            {
-                if (char.IsDigit(caractere)) numeros.Append(caractere);
-            }
-            return numeros.ToString();
+            return CepUtil.SomenteNumeros(valor);
         }
 
         private static T Desserializar<T>(string json)
