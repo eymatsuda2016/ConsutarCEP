@@ -123,7 +123,9 @@ namespace ConsultaCEPs
             ConfigurarEfeitoHover(btnLimpar, Color.FromArgb(92, 155, 213), Color.FromArgb(124, 181, 230));
             ConfigurarEfeitoHover(btnSair, Color.FromArgb(27, 64, 96), Color.FromArgb(48, 94, 130));
             ConfigurarEfeitoHover(btnCopiarCep, Color.FromArgb(63, 145, 205), Color.FromArgb(92, 169, 220));
+            ConfigurarEfeitoHover(btnExportar, Color.FromArgb(72, 137, 104), Color.FromArgb(95, 164, 126));
             btnCopiarCep.Enabled = false;
+            btnExportar.Enabled = false;
             btnConsultar.Image = CriarImagemBotaoConsultar();
             btnConsultar.ImageAlign = ContentAlignment.MiddleLeft;
             btnConsultar.TextImageRelation = TextImageRelation.ImageBeforeText;
@@ -320,6 +322,7 @@ namespace ConsultaCEPs
 
             txtObservacao.Text = observacao;
             btnCopiarCep.Enabled = !string.IsNullOrWhiteSpace(endereco.Cep);
+            btnExportar.Enabled = !string.IsNullOrWhiteSpace(endereco.Cep);
             RegistrarHistorico(endereco.Cep);
         }
 
@@ -373,6 +376,7 @@ namespace ConsultaCEPs
             txtLogradouro.Clear();
             txtObservacao.Clear();
             btnCopiarCep.Enabled = false;
+            btnExportar.Enabled = false;
         }
 
         private void btnCopiarCep_Click(object sender, EventArgs e)
@@ -385,6 +389,53 @@ namespace ConsultaCEPs
 
             Clipboard.SetText(cep);
             MessageBox.Show("CEP copiado para a área de transferência.", "CEP copiado", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void btnExportar_Click(object sender, EventArgs e)
+        {
+            string cep = txtCEP.Text.Trim();
+            if (string.IsNullOrWhiteSpace(cep))
+            {
+                return;
+            }
+
+            using (SaveFileDialog dialogo = new SaveFileDialog())
+            {
+                dialogo.Title = "Exportar consulta de CEP";
+                dialogo.Filter = "Arquivo de texto (*.txt)|*.txt|Todos os arquivos (*.*)|*.*";
+                dialogo.DefaultExt = "txt";
+                dialogo.AddExtension = true;
+                dialogo.FileName = "ConsultaCEP_" + cep.Replace("-", "") + ".txt";
+
+                if (dialogo.ShowDialog() != DialogResult.OK)
+                {
+                    return;
+                }
+
+                string conteudo = string.Format(
+                    "Consulta de CEP{0}{0}CEP: {1}{0}UF: {2}{0}Localidade: {3}{0}Bairro/Distrito: {4}{0}Logradouro: {5}{0}Observação: {6}{0}{0}Fonte: ViaCEP",
+                    Environment.NewLine,
+                    txtCEP.Text,
+                    txtEstado.Text,
+                    txtCidade.Text,
+                    txtBairro.Text,
+                    txtLogradouro.Text,
+                    txtObservacao.Text);
+
+                try
+                {
+                    File.WriteAllText(dialogo.FileName, conteudo, Encoding.UTF8);
+                    MessageBox.Show("Consulta exportada com sucesso.", "Exportação concluída", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (IOException)
+                {
+                    MessageBox.Show("Não foi possível salvar o arquivo. Verifique o local escolhido e tente novamente.", "Erro na exportação", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    MessageBox.Show("Não há permissão para salvar nesse local. Escolha outra pasta e tente novamente.", "Acesso negado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
         }
 
         private void cmbCEPs_SelectedIndexChanged(object sender, EventArgs e)

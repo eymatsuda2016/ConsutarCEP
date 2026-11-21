@@ -48,6 +48,7 @@
             this.lblDesenvolvedor = new System.Windows.Forms.Label();
             this.lblFonteDados = new System.Windows.Forms.Label();
             this.btnCopiarCep = new System.Windows.Forms.Button();
+            this.btnExportar = new System.Windows.Forms.Button();
             this.btnLimpar = new System.Windows.Forms.Button();
             this.btnSair = new System.Windows.Forms.Button();
             this.btnConsultar = new System.Windows.Forms.Button();
@@ -249,11 +250,26 @@
             this.btnCopiarCep.ForeColor = System.Drawing.Color.White;
             this.btnCopiarCep.Location = new System.Drawing.Point(25, 492);
             this.btnCopiarCep.Name = "btnCopiarCep";
-            this.btnCopiarCep.Size = new System.Drawing.Size(137, 30);
+            this.btnCopiarCep.Size = new System.Drawing.Size(105, 30);
             this.btnCopiarCep.TabIndex = 6;
             this.btnCopiarCep.Text = "Copiar CEP";
             this.btnCopiarCep.UseVisualStyleBackColor = false;
             this.btnCopiarCep.Click += new System.EventHandler(this.btnCopiarCep_Click);
+            // 
+            // btnExportar
+            // 
+            this.btnExportar.BackColor = System.Drawing.Color.FromArgb(72, 137, 104);
+            this.btnExportar.FlatAppearance.BorderSize = 0;
+            this.btnExportar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnExportar.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnExportar.ForeColor = System.Drawing.Color.White;
+            this.btnExportar.Location = new System.Drawing.Point(140, 492);
+            this.btnExportar.Name = "btnExportar";
+            this.btnExportar.Size = new System.Drawing.Size(95, 30);
+            this.btnExportar.TabIndex = 7;
+            this.btnExportar.Text = "Exportar";
+            this.btnExportar.UseVisualStyleBackColor = false;
+            this.btnExportar.Click += new System.EventHandler(this.btnExportar_Click);
             // 
             // btnLimpar
             // 
@@ -336,6 +352,7 @@
             this.ClientSize = new System.Drawing.Size(579, 544);
             this.Controls.Add(this.btnSair);
             this.Controls.Add(this.btnLimpar);
+            this.Controls.Add(this.btnExportar);
             this.Controls.Add(this.btnCopiarCep);
             this.Controls.Add(this.btnConsultar);
             this.Controls.Add(this.groupBox1);
@@ -377,6 +394,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button btnConsultar;
         private System.Windows.Forms.Button btnCopiarCep;
+        private System.Windows.Forms.Button btnExportar;
         private System.Windows.Forms.Button btnLimpar;
         private System.Windows.Forms.Button btnSair;
         private System.Windows.Forms.Label lblDesenvolvedor;
