@@ -620,15 +620,30 @@ namespace ConsultaCEPs
                     using (SaveFileDialog salvar = new SaveFileDialog())
                     {
                         salvar.Title = "Salvar resultados da consulta em lote";
-                        salvar.Filter = "Arquivo CSV (*.csv)|*.csv";
+                        salvar.Filter = "Arquivo CSV (*.csv)|*.csv|Arquivo Excel (*.xlsx)|*.xlsx";
                         salvar.DefaultExt = "csv";
                         salvar.AddExtension = true;
                         salvar.FileName = "ConsultasCEP_Lote.csv";
 
                         if (salvar.ShowDialog() == DialogResult.OK)
                         {
-                            File.WriteAllText(salvar.FileName, CriarConteudoCsvLote(resultados), Encoding.UTF8);
-                            LogTecnico.Registrar("Consulta em lote exportada em CSV");
+                            bool exportarXlsx = salvar.FilterIndex == 2;
+                            string caminhoExportacao = exportarXlsx
+                                ? Path.ChangeExtension(salvar.FileName, "xlsx")
+                                : Path.ChangeExtension(salvar.FileName, "csv");
+
+                            if (exportarXlsx)
+                            {
+                                ExportarXlsx(caminhoExportacao, CriarLinhasXlsxLote(resultados));
+                            }
+                            else
+                            {
+                                File.WriteAllText(caminhoExportacao, CriarConteudoCsvLote(resultados), Encoding.UTF8);
+                            }
+
+                            LogTecnico.Registrar(exportarXlsx
+                                ? "Consulta em lote exportada em XLSX"
+                                : "Consulta em lote exportada em CSV");
                         }
                     }
 
@@ -746,6 +761,23 @@ namespace ConsultaCEPs
             }
 
             return csv.ToString() + Environment.NewLine;
+        }
+
+        private static IEnumerable<string[]> CriarLinhasXlsxLote(IEnumerable<ResultadoConsultaLote> resultados)
+        {
+            foreach (ResultadoConsultaLote resultado in resultados)
+            {
+                yield return new[]
+                {
+                    resultado.Cep,
+                    resultado.Status,
+                    resultado.Uf,
+                    resultado.Localidade,
+                    resultado.Bairro,
+                    resultado.Logradouro,
+                    resultado.Observacao
+                };
+            }
         }
 
         private void btnLimpar_Click(object sender, EventArgs e)
@@ -1039,6 +1071,17 @@ namespace ConsultaCEPs
             string[] cabecalho = { "CEP", "UF", "Localidade", "Bairro/Distrito", "Logradouro", "Observação" };
             string[] valores = { txtCEP.Text, txtEstado.Text, txtCidade.Text, txtBairro.Text, txtLogradouro.Text, txtObservacao.Text };
 
+            ExportarXlsx(caminho, cabecalho, new[] { valores });
+        }
+
+        private static void ExportarXlsx(string caminho, IEnumerable<string[]> linhas)
+        {
+            string[] cabecalho = { "CEP", "Status", "UF", "Localidade", "Bairro/Distrito", "Logradouro", "Observação" };
+            ExportarXlsx(caminho, cabecalho, linhas);
+        }
+
+        private static void ExportarXlsx(string caminho, string[] cabecalho, IEnumerable<string[]> linhas)
+        {
             using (FileStream arquivo = new FileStream(caminho, FileMode.Create, FileAccess.Write))
             using (ZipArchive planilha = new ZipArchive(arquivo, ZipArchiveMode.Create))
             {
@@ -1069,7 +1112,11 @@ namespace ConsultaCEPs
                     "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
                     "<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\"><sheetData>");
                 AdicionarLinhaXlsx(planilhaXml, 1, cabecalho);
-                AdicionarLinhaXlsx(planilhaXml, 2, valores);
+                int numeroLinha = 2;
+                foreach (string[] linha in linhas)
+                {
+                    AdicionarLinhaXlsx(planilhaXml, numeroLinha++, linha);
+                }
                 planilhaXml.Append("</sheetData></worksheet>");
                 AdicionarEntradaXlsx(planilha, "xl/worksheets/sheet1.xml", planilhaXml.ToString());
             }
