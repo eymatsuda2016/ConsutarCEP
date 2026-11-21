@@ -57,5 +57,17 @@ namespace ConsultaCEPs.Tests
             Assert.AreEqual(1, resultado.Excedentes);
             Assert.AreEqual(2, resultado.Ceps.Count);
         }
+
+        [TestMethod]
+        public void CalcularEstatisticas_ClassificaResultados()
+        {
+            var estatisticas = ConsultaLoteUtil.CalcularEstatisticas(
+                new[] { "OK", "Não encontrado", "Erro de conexão", "OK" });
+
+            Assert.AreEqual(4, estatisticas.Total);
+            Assert.AreEqual(2, estatisticas.Encontrados);
+            Assert.AreEqual(1, estatisticas.NaoEncontrados);
+            Assert.AreEqual(1, estatisticas.Erros);
+        }
     }
 }

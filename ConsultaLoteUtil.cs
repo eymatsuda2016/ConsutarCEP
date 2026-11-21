@@ -4,6 +4,14 @@ using System.Linq;
 
 namespace ConsultaCEPs
 {
+    public sealed class EstatisticasConsultaLote
+    {
+        public int Total { get; set; }
+        public int Encontrados { get; set; }
+        public int NaoEncontrados { get; set; }
+        public int Erros { get; set; }
+    }
+
     public sealed class ResultadoValidacaoLote
     {
         public List<string> Ceps { get; set; }
@@ -52,6 +60,34 @@ namespace ConsultaCEPs
             resultado.Excedentes = Math.Max(0, encontrados.Count - limite);
             resultado.Ceps = encontrados.Take(limite).ToList();
             return resultado;
+        }
+
+        public static EstatisticasConsultaLote CalcularEstatisticas(IEnumerable<string> status)
+        {
+            EstatisticasConsultaLote estatisticas = new EstatisticasConsultaLote();
+            if (status == null)
+            {
+                return estatisticas;
+            }
+
+            foreach (string valor in status)
+            {
+                estatisticas.Total++;
+                if (string.Equals(valor, "OK", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    estatisticas.Encontrados++;
+                }
+                else if (string.Equals(valor, "Não encontrado", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    estatisticas.NaoEncontrados++;
+                }
+                else
+                {
+                    estatisticas.Erros++;
+                }
+            }
+
+            return estatisticas;
         }
     }
 }

@@ -606,6 +606,7 @@ namespace ConsultaCEPs
                 btnConsultar.Enabled = false;
                 btnConsultaLote.Cursor = Cursors.WaitCursor;
                 btnConsultaLote.Text = "Cancelar lote";
+                Stopwatch cronometroLote = Stopwatch.StartNew();
 
                 try
                 {
@@ -628,9 +629,21 @@ namespace ConsultaCEPs
                         {
                             File.WriteAllText(salvar.FileName, CriarConteudoCsvLote(resultados), Encoding.UTF8);
                             LogTecnico.Registrar("Consulta em lote exportada em CSV");
-                            MessageBox.Show(string.Format("{0} CEP(s) foram processados e exportados.", resultados.Count), "Consulta em lote concluída", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         }
                     }
+
+                    cronometroLote.Stop();
+                    EstatisticasConsultaLote estatisticas = ConsultaLoteUtil.CalcularEstatisticas(
+                        resultados.Select(resultado => resultado.Status));
+                    MessageBox.Show(
+                        string.Format(
+                            "Consulta em lote concluída.\n\nTotal processado: {0}\nEndereços encontrados: {1}\nCEPs não encontrados: {2}\nErros de consulta: {3}\nTempo total: {4:0.0} segundo(s)",
+                            estatisticas.Total,
+                            estatisticas.Encontrados,
+                            estatisticas.NaoEncontrados,
+                            estatisticas.Erros,
+                            cronometroLote.Elapsed.TotalSeconds),
+                        "Resumo da consulta em lote", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (OperationCanceledException excecao)
                 {
