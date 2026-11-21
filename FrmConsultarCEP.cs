@@ -120,7 +120,7 @@ namespace ConsultaCEPs
 
         private void FrmConsultaCEP_Load(object sender, EventArgs e)
         {
-            WindowState = FormWindowState.Normal;
+            PrepararJanelaInicial();
             ArredondarBotao(btnConsultar, 12);
             ArredondarBotao(btnLimpar, 10);
             ArredondarBotao(btnSair, 10);
@@ -150,6 +150,20 @@ namespace ConsultaCEPs
         {
             Screen telaAtual = Screen.FromControl(this);
             MaximizedBounds = telaAtual.WorkingArea;
+        }
+
+        private void PrepararJanelaInicial()
+        {
+            WindowState = FormWindowState.Normal;
+            ClientSize = new Size(579, 544);
+
+            Screen telaAtual = Screen.FromPoint(Cursor.Position);
+            Rectangle areaUtil = telaAtual.WorkingArea;
+            int x = areaUtil.Left + (areaUtil.Width - Width) / 2;
+            int y = areaUtil.Top + (areaUtil.Height - Height) / 2;
+
+            Location = new Point(x, y);
+            MaximizedBounds = areaUtil;
         }
 
         private static Bitmap CriarImagemBotaoConsultar()
