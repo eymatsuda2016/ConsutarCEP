@@ -38,6 +38,7 @@ namespace ConsultaCEPs
             Paint += FrmConsultaCEP_Paint;
             Shown += FrmConsultaCEP_Shown;
             FormClosed += FrmConsultaCEP_FormClosed;
+            LocationChanged += FrmConsultaCEP_LocationChanged;
             Icon = CriarIconeCabecalho();
         }
 
@@ -126,10 +127,25 @@ namespace ConsultaCEPs
             ConfigurarEfeitoHover(btnExportar, Color.FromArgb(72, 137, 104), Color.FromArgb(95, 164, 126));
             btnCopiarCep.Enabled = false;
             btnExportar.Enabled = false;
+            AtualizarLimitesMaximizacao();
             btnConsultar.Image = CriarImagemBotaoConsultar();
             btnConsultar.ImageAlign = ContentAlignment.MiddleLeft;
             btnConsultar.TextImageRelation = TextImageRelation.ImageBeforeText;
             txtCEP.Focus();
+        }
+
+        private void FrmConsultaCEP_LocationChanged(object sender, EventArgs e)
+        {
+            if (WindowState == FormWindowState.Normal)
+            {
+                AtualizarLimitesMaximizacao();
+            }
+        }
+
+        private void AtualizarLimitesMaximizacao()
+        {
+            Screen telaAtual = Screen.FromControl(this);
+            MaximizedBounds = telaAtual.WorkingArea;
         }
 
         private static Bitmap CriarImagemBotaoConsultar()
