@@ -173,7 +173,11 @@ namespace ConsultaCEPs
                 return;
             }
 
+            string textoBotaoConsultar = btnConsultar.Text;
             btnConsultar.Enabled = false;
+            btnConsultar.Text = "Consultando...";
+            btnConsultar.Cursor = Cursors.WaitCursor;
+            btnConsultar.Refresh();
 
             try
             {
@@ -239,6 +243,8 @@ namespace ConsultaCEPs
             finally
             {
                 btnConsultar.Enabled = true;
+                btnConsultar.Text = textoBotaoConsultar;
+                btnConsultar.Cursor = Cursors.Hand;
             }
         }
 
