@@ -22,6 +22,8 @@ namespace ConsultaCEPs
     {
         private ViaCepEndereco[] enderecosEncontrados = new ViaCepEndereco[0];
         private Bitmap marcaDagua;
+        private readonly List<string> historicoCEPs = new List<string>();
+        private bool atualizandoHistorico;
 
         private static readonly HttpClient clienteHttp = new HttpClient
         {
@@ -318,6 +320,46 @@ namespace ConsultaCEPs
 
             txtObservacao.Text = observacao;
             btnCopiarCep.Enabled = !string.IsNullOrWhiteSpace(endereco.Cep);
+            RegistrarHistorico(endereco.Cep);
+        }
+
+        private void RegistrarHistorico(string cep)
+        {
+            string cepFormatado = SomenteNumeros(cep);
+            if (cepFormatado.Length != 8)
+            {
+                return;
+            }
+
+            cepFormatado = cepFormatado.Insert(5, "-");
+            historicoCEPs.Remove(cepFormatado);
+            historicoCEPs.Insert(0, cepFormatado);
+
+            if (historicoCEPs.Count > 10)
+            {
+                historicoCEPs.RemoveAt(historicoCEPs.Count - 1);
+            }
+
+            atualizandoHistorico = true;
+            cmbHistorico.DataSource = null;
+            cmbHistorico.DataSource = historicoCEPs.ToList();
+            atualizandoHistorico = false;
+        }
+
+        private void cmbHistorico_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (atualizandoHistorico)
+            {
+                return;
+            }
+
+            string cep = cmbHistorico.SelectedItem as string;
+            if (!string.IsNullOrWhiteSpace(cep))
+            {
+                txtCEP.Text = cep;
+                txtCEP.Focus();
+                txtCEP.SelectionStart = txtCEP.Text.Length;
+            }
         }
 
         private void LimparResultado()

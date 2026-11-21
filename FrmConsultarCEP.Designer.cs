@@ -43,6 +43,8 @@
             this.label6 = new System.Windows.Forms.Label();
             this.txtObservacao = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
+            this.cmbHistorico = new System.Windows.Forms.ComboBox();
+            this.label8 = new System.Windows.Forms.Label();
             this.lblDesenvolvedor = new System.Windows.Forms.Label();
             this.lblFonteDados = new System.Windows.Forms.Label();
             this.btnCopiarCep = new System.Windows.Forms.Button();
@@ -79,6 +81,8 @@
             this.groupBox1.Controls.Add(this.label6);
             this.groupBox1.Controls.Add(this.txtObservacao);
             this.groupBox1.Controls.Add(this.label7);
+            this.groupBox1.Controls.Add(this.cmbHistorico);
+            this.groupBox1.Controls.Add(this.label8);
             this.groupBox1.Controls.Add(this.txtLogradouro);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.txtBairro);
@@ -89,7 +93,7 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Location = new System.Drawing.Point(25, 81);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(529, 338);
+            this.groupBox1.Size = new System.Drawing.Size(529, 380);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Busca por endereço e resultado";
@@ -213,6 +217,27 @@
             this.label7.TabIndex = 12;
             this.label7.Text = "Observação do CEP:";
             // 
+            // cmbHistorico
+            // 
+            this.cmbHistorico.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbHistorico.FormattingEnabled = true;
+            this.cmbHistorico.BackColor = System.Drawing.Color.White;
+            this.cmbHistorico.Location = new System.Drawing.Point(6, 356);
+            this.cmbHistorico.Name = "cmbHistorico";
+            this.cmbHistorico.Size = new System.Drawing.Size(492, 21);
+            this.cmbHistorico.TabIndex = 15;
+            this.cmbHistorico.SelectedIndexChanged += new System.EventHandler(this.cmbHistorico_SelectedIndexChanged);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.ForeColor = System.Drawing.Color.FromArgb(27, 64, 96);
+            this.label8.Location = new System.Drawing.Point(6, 340);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(164, 13);
+            this.label8.TabIndex = 14;
+            this.label8.Text = "Histórico de CEPs (nesta sessão):";
+            // 
             // btnLimpar
             // 
             // btnCopiarCep
@@ -222,7 +247,7 @@
             this.btnCopiarCep.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCopiarCep.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnCopiarCep.ForeColor = System.Drawing.Color.White;
-            this.btnCopiarCep.Location = new System.Drawing.Point(25, 450);
+            this.btnCopiarCep.Location = new System.Drawing.Point(25, 492);
             this.btnCopiarCep.Name = "btnCopiarCep";
             this.btnCopiarCep.Size = new System.Drawing.Size(137, 30);
             this.btnCopiarCep.TabIndex = 6;
@@ -240,7 +265,7 @@
             this.btnLimpar.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnLimpar.ForeColor = System.Drawing.Color.White;
             this.btnLimpar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnLimpar.Location = new System.Drawing.Point(249, 450);
+            this.btnLimpar.Location = new System.Drawing.Point(249, 492);
             this.btnLimpar.Name = "btnLimpar";
             this.btnLimpar.Size = new System.Drawing.Size(137, 30);
             this.btnLimpar.TabIndex = 4;
@@ -258,7 +283,7 @@
             this.btnSair.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnSair.ForeColor = System.Drawing.Color.White;
             this.btnSair.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnSair.Location = new System.Drawing.Point(406, 450);
+            this.btnSair.Location = new System.Drawing.Point(406, 492);
             this.btnSair.Name = "btnSair";
             this.btnSair.Size = new System.Drawing.Size(137, 30);
             this.btnSair.TabIndex = 5;
@@ -286,7 +311,7 @@
             this.lblDesenvolvedor.AutoSize = true;
             this.lblDesenvolvedor.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblDesenvolvedor.ForeColor = System.Drawing.Color.Gray;
-            this.lblDesenvolvedor.Location = new System.Drawing.Point(25, 486);
+            this.lblDesenvolvedor.Location = new System.Drawing.Point(25, 528);
             this.lblDesenvolvedor.Name = "lblDesenvolvedor";
             this.lblDesenvolvedor.Size = new System.Drawing.Size(193, 13);
             this.lblDesenvolvedor.TabIndex = 6;
@@ -297,7 +322,7 @@
             this.lblFonteDados.AutoSize = true;
             this.lblFonteDados.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblFonteDados.ForeColor = System.Drawing.Color.Gray;
-            this.lblFonteDados.Location = new System.Drawing.Point(421, 486);
+            this.lblFonteDados.Location = new System.Drawing.Point(421, 528);
             this.lblFonteDados.Name = "lblFonteDados";
             this.lblFonteDados.Size = new System.Drawing.Size(76, 13);
             this.lblFonteDados.TabIndex = 7;
@@ -308,7 +333,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(220, 236, 247);
-            this.ClientSize = new System.Drawing.Size(579, 502);
+            this.ClientSize = new System.Drawing.Size(579, 544);
             this.Controls.Add(this.btnSair);
             this.Controls.Add(this.btnLimpar);
             this.Controls.Add(this.btnCopiarCep);
@@ -342,6 +367,8 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox txtObservacao;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.ComboBox cmbHistorico;
+        private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox txtBairro;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox txtCidade;
