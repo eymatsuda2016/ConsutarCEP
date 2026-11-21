@@ -29,6 +29,19 @@ namespace ConsultaCEPs
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             InitializeComponent();
+            Icon = CriarIconeCabecalho();
+        }
+
+        private static Icon CriarIconeCabecalho()
+        {
+            using (Bitmap imagem = new Bitmap(Properties.Resources.busca_cep))
+            {
+                IntPtr handle = imagem.GetHicon();
+                using (Icon temporario = Icon.FromHandle(handle))
+                {
+                    return (Icon)temporario.Clone();
+                }
+            }
         }
 
         private void FrmConsultaCEP_Load(object sender, EventArgs e)
@@ -36,6 +49,18 @@ namespace ConsultaCEPs
             ArredondarBotao(btnConsultar, 12);
             ArredondarBotao(btnLimpar, 10);
             ArredondarBotao(btnSair, 10);
+            ConfigurarEfeitoHover(btnConsultar, Color.FromArgb(38, 115, 170), Color.FromArgb(63, 145, 205));
+            ConfigurarEfeitoHover(btnLimpar, Color.FromArgb(92, 155, 213), Color.FromArgb(124, 181, 230));
+            ConfigurarEfeitoHover(btnSair, Color.FromArgb(27, 64, 96), Color.FromArgb(48, 94, 130));
+            txtCEP.Focus();
+        }
+
+        private static void ConfigurarEfeitoHover(Button botao, Color corNormal, Color corHover)
+        {
+            botao.Cursor = Cursors.Hand;
+            botao.BackColor = corNormal;
+            botao.MouseEnter += delegate { botao.BackColor = corHover; };
+            botao.MouseLeave += delegate { botao.BackColor = corNormal; };
         }
 
         private void txtEstado_TextChanged(object sender, EventArgs e)

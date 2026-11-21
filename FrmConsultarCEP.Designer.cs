@@ -51,6 +51,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
+            this.label1.ForeColor = System.Drawing.Color.FromArgb(27, 64, 96);
             this.label1.Location = new System.Drawing.Point(25, 21);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(31, 13);
@@ -59,7 +60,7 @@
             // 
             // txtCEP
             // 
-            this.txtCEP.BackColor = System.Drawing.SystemColors.Info;
+            this.txtCEP.BackColor = System.Drawing.Color.White;
             this.txtCEP.Location = new System.Drawing.Point(25, 37);
             this.txtCEP.Name = "txtCEP";
             this.txtCEP.Size = new System.Drawing.Size(201, 20);
@@ -83,11 +84,12 @@
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Busca por endereço e resultado";
-            this.groupBox1.BackColor = System.Drawing.Color.FromArgb(220, 235, 247);
+            this.groupBox1.BackColor = System.Drawing.Color.White;
+            this.groupBox1.ForeColor = System.Drawing.Color.FromArgb(27, 64, 96);
             // 
             // txtEstado
             // 
-            this.txtEstado.BackColor = System.Drawing.SystemColors.Window;
+            this.txtEstado.BackColor = System.Drawing.Color.White;
             this.txtEstado.Location = new System.Drawing.Point(6, 39);
             this.txtEstado.Name = "txtEstado";
             this.txtEstado.Size = new System.Drawing.Size(60, 20);
@@ -99,6 +101,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
+            this.label2.ForeColor = System.Drawing.Color.FromArgb(27, 64, 96);
             this.label2.Location = new System.Drawing.Point(6, 23);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(43, 13);
@@ -107,7 +110,7 @@
             // 
             // txtCidade
             // 
-            this.txtCidade.BackColor = System.Drawing.SystemColors.Window;
+            this.txtCidade.BackColor = System.Drawing.Color.White;
             this.txtCidade.Location = new System.Drawing.Point(6, 86);
             this.txtCidade.Name = "txtCidade";
             this.txtCidade.Size = new System.Drawing.Size(492, 20);
@@ -116,6 +119,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
+            this.label3.ForeColor = System.Drawing.Color.FromArgb(27, 64, 96);
             this.label3.Location = new System.Drawing.Point(6, 70);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(43, 13);
@@ -124,7 +128,7 @@
             // 
             // txtBairro
             // 
-            this.txtBairro.BackColor = System.Drawing.Color.LightGray;
+            this.txtBairro.BackColor = System.Drawing.Color.FromArgb(232, 241, 248);
             this.txtBairro.Location = new System.Drawing.Point(6, 134);
             this.txtBairro.Name = "txtBairro";
             this.txtBairro.Size = new System.Drawing.Size(492, 20);
@@ -134,6 +138,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
+            this.label4.ForeColor = System.Drawing.Color.FromArgb(27, 64, 96);
             this.label4.Location = new System.Drawing.Point(6, 118);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(37, 13);
@@ -142,7 +147,7 @@
             // 
             // txtLogradouro
             // 
-            this.txtLogradouro.BackColor = System.Drawing.SystemColors.Window;
+            this.txtLogradouro.BackColor = System.Drawing.Color.White;
             this.txtLogradouro.Location = new System.Drawing.Point(9, 193);
             this.txtLogradouro.Name = "txtLogradouro";
             this.txtLogradouro.Size = new System.Drawing.Size(489, 20);
@@ -151,6 +156,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
+            this.label5.ForeColor = System.Drawing.Color.FromArgb(27, 64, 96);
             this.label5.Location = new System.Drawing.Point(9, 177);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(61, 13);
@@ -161,6 +167,7 @@
             // 
             this.cmbCEPs.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbCEPs.FormattingEnabled = true;
+            this.cmbCEPs.BackColor = System.Drawing.Color.White;
             this.cmbCEPs.Location = new System.Drawing.Point(6, 260);
             this.cmbCEPs.Name = "cmbCEPs";
             this.cmbCEPs.Size = new System.Drawing.Size(492, 21);
@@ -170,6 +177,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
+            this.label6.ForeColor = System.Drawing.Color.FromArgb(27, 64, 96);
             this.label6.Location = new System.Drawing.Point(6, 244);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(178, 13);
@@ -180,26 +188,36 @@
             // 
             this.btnLimpar.BackgroundImage = global::ConsultaCEPs.Properties.Resources.limpar;
             this.btnLimpar.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.btnLimpar.BackColor = System.Drawing.Color.FromArgb(92, 155, 213);
+            this.btnLimpar.FlatAppearance.BorderSize = 0;
+            this.btnLimpar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnLimpar.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnLimpar.ForeColor = System.Drawing.Color.White;
             this.btnLimpar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnLimpar.Location = new System.Drawing.Point(249, 414);
             this.btnLimpar.Name = "btnLimpar";
             this.btnLimpar.Size = new System.Drawing.Size(137, 30);
             this.btnLimpar.TabIndex = 4;
             this.btnLimpar.Text = "Limpar";
-            this.btnLimpar.UseVisualStyleBackColor = true;
+            this.btnLimpar.UseVisualStyleBackColor = false;
             this.btnLimpar.Click += new System.EventHandler(this.btnLimpar_Click);
             // 
             // btnSair
             // 
             this.btnSair.BackgroundImage = global::ConsultaCEPs.Properties.Resources.sair;
             this.btnSair.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.btnSair.BackColor = System.Drawing.Color.FromArgb(27, 64, 96);
+            this.btnSair.FlatAppearance.BorderSize = 0;
+            this.btnSair.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSair.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnSair.ForeColor = System.Drawing.Color.White;
             this.btnSair.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnSair.Location = new System.Drawing.Point(386, 414);
+            this.btnSair.Location = new System.Drawing.Point(406, 414);
             this.btnSair.Name = "btnSair";
             this.btnSair.Size = new System.Drawing.Size(137, 30);
             this.btnSair.TabIndex = 5;
             this.btnSair.Text = "Sair";
-            this.btnSair.UseVisualStyleBackColor = true;
+            this.btnSair.UseVisualStyleBackColor = false;
             this.btnSair.Click += new System.EventHandler(this.btnSair_Click);
             // 
             // btnConsultar
@@ -209,12 +227,12 @@
             this.btnConsultar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnConsultar.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnConsultar.ForeColor = System.Drawing.Color.White;
-            this.btnConsultar.Location = new System.Drawing.Point(249, 21);
+            this.btnConsultar.Location = new System.Drawing.Point(249, 32);
             this.btnConsultar.Name = "btnConsultar";
-            this.btnConsultar.Size = new System.Drawing.Size(274, 54);
+            this.btnConsultar.Size = new System.Drawing.Size(274, 30);
             this.btnConsultar.TabIndex = 3;
             this.btnConsultar.Text = "Consultar CEP";
-            this.btnConsultar.UseVisualStyleBackColor = true;
+            this.btnConsultar.UseVisualStyleBackColor = false;
             this.btnConsultar.Click += new System.EventHandler(this.btnConsultar_Click);
             // 
             // lblDesenvolvedor
@@ -232,7 +250,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(220, 235, 247);
+            this.BackColor = System.Drawing.Color.FromArgb(235, 245, 252);
             this.ClientSize = new System.Drawing.Size(579, 466);
             this.Controls.Add(this.btnSair);
             this.Controls.Add(this.btnLimpar);
