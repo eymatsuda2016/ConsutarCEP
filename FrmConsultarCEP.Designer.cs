@@ -39,6 +39,8 @@
             this.label4 = new System.Windows.Forms.Label();
             this.txtLogradouro = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
+            this.cmbCEPs = new System.Windows.Forms.ComboBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.lblDesenvolvedor = new System.Windows.Forms.Label();
             this.btnLimpar = new System.Windows.Forms.Button();
             this.btnSair = new System.Windows.Forms.Button();
@@ -65,6 +67,8 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.cmbCEPs);
+            this.groupBox1.Controls.Add(this.label6);
             this.groupBox1.Controls.Add(this.txtLogradouro);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.txtBairro);
@@ -75,7 +79,7 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Location = new System.Drawing.Point(25, 81);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(529, 257);
+            this.groupBox1.Size = new System.Drawing.Size(529, 302);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Busca por endereço e resultado";
@@ -86,7 +90,7 @@
             this.txtEstado.BackColor = System.Drawing.SystemColors.Window;
             this.txtEstado.Location = new System.Drawing.Point(6, 39);
             this.txtEstado.Name = "txtEstado";
-            this.txtEstado.Size = new System.Drawing.Size(492, 20);
+            this.txtEstado.Size = new System.Drawing.Size(60, 20);
             this.txtEstado.TabIndex = 3;
             this.txtEstado.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
             this.txtEstado.MaxLength = 2;
@@ -99,7 +103,7 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(43, 13);
             this.label2.TabIndex = 2;
-            this.label2.Text = "UF (ex.: SP):";
+            this.label2.Text = "UF (obrigatório, ex.: SP):";
             // 
             // txtCidade
             // 
@@ -116,7 +120,7 @@
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(43, 13);
             this.label3.TabIndex = 4;
-            this.label3.Text = "Cidade:";
+            this.label3.Text = "Cidade (obrigatório):";
             // 
             // txtBairro
             // 
@@ -153,12 +157,31 @@
             this.label5.TabIndex = 8;
             this.label5.Text = "Logradouro (rua, avenida etc.):";
             // 
+            // cmbCEPs
+            // 
+            this.cmbCEPs.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbCEPs.FormattingEnabled = true;
+            this.cmbCEPs.Location = new System.Drawing.Point(6, 260);
+            this.cmbCEPs.Name = "cmbCEPs";
+            this.cmbCEPs.Size = new System.Drawing.Size(492, 21);
+            this.cmbCEPs.TabIndex = 11;
+            this.cmbCEPs.SelectedIndexChanged += new System.EventHandler(this.cmbCEPs_SelectedIndexChanged);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 244);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(178, 13);
+            this.label6.TabIndex = 10;
+            this.label6.Text = "CEPs encontrados (se houver mais de um):";
+            // 
             // btnLimpar
             // 
             this.btnLimpar.BackgroundImage = global::ConsultaCEPs.Properties.Resources.limpar;
             this.btnLimpar.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.btnLimpar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnLimpar.Location = new System.Drawing.Point(249, 369);
+            this.btnLimpar.Location = new System.Drawing.Point(249, 414);
             this.btnLimpar.Name = "btnLimpar";
             this.btnLimpar.Size = new System.Drawing.Size(137, 30);
             this.btnLimpar.TabIndex = 4;
@@ -171,7 +194,7 @@
             this.btnSair.BackgroundImage = global::ConsultaCEPs.Properties.Resources.sair;
             this.btnSair.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.btnSair.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnSair.Location = new System.Drawing.Point(386, 369);
+            this.btnSair.Location = new System.Drawing.Point(386, 414);
             this.btnSair.Name = "btnSair";
             this.btnSair.Size = new System.Drawing.Size(137, 30);
             this.btnSair.TabIndex = 5;
@@ -199,7 +222,7 @@
             this.lblDesenvolvedor.AutoSize = true;
             this.lblDesenvolvedor.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblDesenvolvedor.ForeColor = System.Drawing.Color.Gray;
-            this.lblDesenvolvedor.Location = new System.Drawing.Point(25, 405);
+            this.lblDesenvolvedor.Location = new System.Drawing.Point(25, 450);
             this.lblDesenvolvedor.Name = "lblDesenvolvedor";
             this.lblDesenvolvedor.Size = new System.Drawing.Size(193, 13);
             this.lblDesenvolvedor.TabIndex = 6;
@@ -210,7 +233,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(220, 235, 247);
-            this.ClientSize = new System.Drawing.Size(579, 421);
+            this.ClientSize = new System.Drawing.Size(579, 466);
             this.Controls.Add(this.btnSair);
             this.Controls.Add(this.btnLimpar);
             this.Controls.Add(this.btnConsultar);
@@ -238,6 +261,8 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.TextBox txtLogradouro;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.ComboBox cmbCEPs;
+        private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox txtBairro;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox txtCidade;

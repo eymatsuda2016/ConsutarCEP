@@ -18,6 +18,8 @@ namespace ConsultaCEPs
 {
     public partial class FrmConsultaCEP : Form
     {
+        private ViaCepEndereco[] enderecosEncontrados = new ViaCepEndereco[0];
+
         private static readonly HttpClient clienteHttp = new HttpClient
         {
             Timeout = TimeSpan.FromSeconds(15)
@@ -58,9 +60,10 @@ namespace ConsultaCEPs
             }
 
             if (informouEndereco &&
-                (string.IsNullOrWhiteSpace(estado) || string.IsNullOrWhiteSpace(cidade) || string.IsNullOrWhiteSpace(logradouro)))
+                (string.IsNullOrWhiteSpace(estado) || estado.Length != 2 || estado.Any(c => !char.IsLetter(c)) ||
+                 string.IsNullOrWhiteSpace(cidade) || string.IsNullOrWhiteSpace(logradouro)))
             {
-                MessageBox.Show("Para buscar por endereço, preencha UF, Cidade e Logradouro.", "Dados incompletos", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Para buscar por endereço, preencha a UF com 2 letras, a Cidade e o Logradouro.", "Dados incompletos", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
@@ -92,15 +95,21 @@ namespace ConsultaCEPs
                         return;
                     }
 
-                    PreencherResultado(enderecos[0]);
+                    enderecosEncontrados = enderecos;
+                    cmbCEPs.DataSource = null;
+                    cmbCEPs.DisplayMember = "Cep";
+                    cmbCEPs.DataSource = enderecosEncontrados;
+                    cmbCEPs.SelectedIndex = 0;
 
                     if (enderecos.Length > 1)
                     {
-                        MessageBox.Show("Foram encontrados vários endereços. O primeiro resultado foi exibido.", "Consulta concluída", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show("Foram encontrados vários CEPs. Use o campo 'CEPs encontrados' para selecionar outro resultado.", "Consulta concluída", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
                 else
                 {
+                    enderecosEncontrados = new ViaCepEndereco[0];
+                    cmbCEPs.DataSource = null;
                     ViaCepEndereco endereco = Desserializar<ViaCepEndereco>(json);
 
                     if (endereco == null || string.IsNullOrWhiteSpace(endereco.Cep))
@@ -154,10 +163,21 @@ namespace ConsultaCEPs
 
         private void LimparResultado()
         {
+            enderecosEncontrados = new ViaCepEndereco[0];
+            cmbCEPs.DataSource = null;
             txtEstado.Clear();
             txtCidade.Clear();
             txtBairro.Clear();
             txtLogradouro.Clear();
+        }
+
+        private void cmbCEPs_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ViaCepEndereco endereco = cmbCEPs.SelectedItem as ViaCepEndereco;
+            if (endereco != null)
+            {
+                PreencherResultado(endereco);
+            }
         }
 
         private static string SomenteNumeros(string valor)
