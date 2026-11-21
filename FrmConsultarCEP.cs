@@ -120,6 +120,8 @@ namespace ConsultaCEPs
             ConfigurarEfeitoHover(btnConsultar, Color.FromArgb(38, 115, 170), Color.FromArgb(63, 145, 205));
             ConfigurarEfeitoHover(btnLimpar, Color.FromArgb(92, 155, 213), Color.FromArgb(124, 181, 230));
             ConfigurarEfeitoHover(btnSair, Color.FromArgb(27, 64, 96), Color.FromArgb(48, 94, 130));
+            ConfigurarEfeitoHover(btnCopiarCep, Color.FromArgb(63, 145, 205), Color.FromArgb(92, 169, 220));
+            btnCopiarCep.Enabled = false;
             btnConsultar.Image = CriarImagemBotaoConsultar();
             btnConsultar.ImageAlign = ContentAlignment.MiddleLeft;
             btnConsultar.TextImageRelation = TextImageRelation.ImageBeforeText;
@@ -298,6 +300,7 @@ namespace ConsultaCEPs
             }
 
             txtObservacao.Text = observacao;
+            btnCopiarCep.Enabled = !string.IsNullOrWhiteSpace(endereco.Cep);
         }
 
         private void LimparResultado()
@@ -310,6 +313,19 @@ namespace ConsultaCEPs
             txtBairro.Clear();
             txtLogradouro.Clear();
             txtObservacao.Clear();
+            btnCopiarCep.Enabled = false;
+        }
+
+        private void btnCopiarCep_Click(object sender, EventArgs e)
+        {
+            string cep = txtCEP.Text.Trim();
+            if (string.IsNullOrWhiteSpace(cep))
+            {
+                return;
+            }
+
+            Clipboard.SetText(cep);
+            MessageBox.Show("CEP copiado para a área de transferência.", "CEP copiado", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void cmbCEPs_SelectedIndexChanged(object sender, EventArgs e)

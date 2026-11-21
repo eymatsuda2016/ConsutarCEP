@@ -44,6 +44,7 @@
             this.txtObservacao = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.lblDesenvolvedor = new System.Windows.Forms.Label();
+            this.btnCopiarCep = new System.Windows.Forms.Button();
             this.btnLimpar = new System.Windows.Forms.Button();
             this.btnSair = new System.Windows.Forms.Button();
             this.btnConsultar = new System.Windows.Forms.Button();
@@ -210,6 +211,23 @@
             // 
             // btnLimpar
             // 
+            // btnCopiarCep
+            // 
+            this.btnCopiarCep.BackColor = System.Drawing.Color.FromArgb(63, 145, 205);
+            this.btnCopiarCep.FlatAppearance.BorderSize = 0;
+            this.btnCopiarCep.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCopiarCep.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnCopiarCep.ForeColor = System.Drawing.Color.White;
+            this.btnCopiarCep.Location = new System.Drawing.Point(25, 450);
+            this.btnCopiarCep.Name = "btnCopiarCep";
+            this.btnCopiarCep.Size = new System.Drawing.Size(137, 30);
+            this.btnCopiarCep.TabIndex = 6;
+            this.btnCopiarCep.Text = "Copiar CEP";
+            this.btnCopiarCep.UseVisualStyleBackColor = false;
+            this.btnCopiarCep.Click += new System.EventHandler(this.btnCopiarCep_Click);
+            // 
+            // btnLimpar
+            // 
             this.btnLimpar.BackgroundImage = global::ConsultaCEPs.Properties.Resources.limpar;
             this.btnLimpar.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.btnLimpar.BackColor = System.Drawing.Color.FromArgb(92, 155, 213);
@@ -278,6 +296,7 @@
             this.ClientSize = new System.Drawing.Size(579, 502);
             this.Controls.Add(this.btnSair);
             this.Controls.Add(this.btnLimpar);
+            this.Controls.Add(this.btnCopiarCep);
             this.Controls.Add(this.btnConsultar);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.txtCEP);
@@ -314,6 +333,7 @@
         private System.Windows.Forms.TextBox txtEstado;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button btnConsultar;
+        private System.Windows.Forms.Button btnCopiarCep;
         private System.Windows.Forms.Button btnLimpar;
         private System.Windows.Forms.Button btnSair;
         private System.Windows.Forms.Label lblDesenvolvedor;
