@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.NetworkInformation;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
@@ -173,6 +174,12 @@ namespace ConsultaCEPs
                 return;
             }
 
+            if (!NetworkInterface.GetIsNetworkAvailable())
+            {
+                MessageBox.Show("Não há conexão de rede disponível. Verifique sua internet e tente novamente.", "Sem conexão", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             string textoBotaoConsultar = btnConsultar.Text;
             btnConsultar.Enabled = false;
             btnConsultar.Text = "Consultando...";
@@ -186,7 +193,12 @@ namespace ConsultaCEPs
                     ? string.Format("https://viacep.com.br/ws/{0}/{1}/{2}/json/", Uri.EscapeDataString(estado), Uri.EscapeDataString(cidade), Uri.EscapeDataString(logradouro))
                     : string.Format("https://viacep.com.br/ws/{0}/json/", cep);
 
-                string json = await clienteHttp.GetStringAsync(url);
+                string json;
+                using (HttpResponseMessage resposta = await clienteHttp.GetAsync(url))
+                {
+                    resposta.EnsureSuccessStatusCode();
+                    json = await resposta.Content.ReadAsStringAsync();
+                }
 
                 if (buscaPorEndereco)
                 {
@@ -236,9 +248,13 @@ namespace ConsultaCEPs
             {
                 MessageBox.Show("Não foi possível acessar o serviço de CEP. Verifique sua conexão com a internet.", "Erro de conexão", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            catch (Exception ex)
+            catch (SerializationException)
             {
-                MessageBox.Show("Erro ao consultar o endereço: " + ex.Message, "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("O serviço de CEP retornou uma resposta inválida. Tente novamente em alguns instantes.", "Resposta inválida", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Ocorreu um erro inesperado durante a consulta. Tente novamente.", "Erro na consulta", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
