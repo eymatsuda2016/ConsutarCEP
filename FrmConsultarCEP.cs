@@ -63,9 +63,10 @@ namespace ConsultaCEPs
                 marcaDagua = imagem;
                 Invalidate();
             }
-            catch
+            catch (Exception excecao)
             {
                 // A imagem é decorativa; a aplicação deve continuar funcionando sem ela.
+                LogTecnico.Registrar("Não foi possível carregar a marca d'água", excecao);
             }
         }
 
@@ -299,6 +300,7 @@ namespace ConsultaCEPs
             try
             {
                 bool buscaPorEndereco = informouEndereco;
+                LogTecnico.Registrar(buscaPorEndereco ? "Iniciada consulta por endereço" : "Iniciada consulta por CEP");
                 string url = buscaPorEndereco
                     ? string.Format("https://viacep.com.br/ws/{0}/{1}/{2}/json/", Uri.EscapeDataString(estado), Uri.EscapeDataString(cidade), Uri.EscapeDataString(logradouro))
                     : string.Format("https://viacep.com.br/ws/{0}/json/", cep);
@@ -307,6 +309,7 @@ namespace ConsultaCEPs
                 using (HttpResponseMessage resposta = await clienteHttp.GetAsync(url))
                 {
                     resposta.EnsureSuccessStatusCode();
+                    LogTecnico.Registrar("Serviço ViaCEP respondeu com sucesso");
                     json = await resposta.Content.ReadAsStringAsync();
                 }
 
@@ -350,20 +353,24 @@ namespace ConsultaCEPs
                     PreencherResultado(endereco);
                 }
             }
-            catch (TaskCanceledException)
+            catch (TaskCanceledException excecao)
             {
+                LogTecnico.Registrar("Consulta cancelada por tempo esgotado", excecao);
                 MessageBox.Show("A consulta demorou demais e foi cancelada.", "Tempo esgotado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException excecao)
             {
+                LogTecnico.Registrar("Falha de comunicação com o serviço ViaCEP", excecao);
                 MessageBox.Show("Não foi possível acessar o serviço de CEP. Verifique sua conexão com a internet.", "Erro de conexão", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            catch (SerializationException)
+            catch (SerializationException excecao)
             {
+                LogTecnico.Registrar("Resposta inválida recebida do serviço ViaCEP", excecao);
                 MessageBox.Show("O serviço de CEP retornou uma resposta inválida. Tente novamente em alguns instantes.", "Resposta inválida", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            catch (Exception)
+            catch (Exception excecao)
             {
+                LogTecnico.Registrar("Erro inesperado durante consulta", excecao);
                 MessageBox.Show("Ocorreu um erro inesperado durante a consulta. Tente novamente.", "Erro na consulta", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
@@ -514,12 +521,14 @@ namespace ConsultaCEPs
                     File.WriteAllText(dialogo.FileName, conteudo, Encoding.UTF8);
                     MessageBox.Show("Consulta exportada com sucesso.", "Exportação concluída", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
-                catch (IOException)
+                catch (IOException excecao)
                 {
+                    LogTecnico.Registrar("Falha de entrada e saída ao exportar consulta", excecao);
                     MessageBox.Show("Não foi possível salvar o arquivo. Verifique o local escolhido e tente novamente.", "Erro na exportação", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-                catch (UnauthorizedAccessException)
+                catch (UnauthorizedAccessException excecao)
                 {
+                    LogTecnico.Registrar("Acesso negado ao exportar consulta", excecao);
                     MessageBox.Show("Não há permissão para salvar nesse local. Escolha outra pasta e tente novamente.", "Acesso negado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }

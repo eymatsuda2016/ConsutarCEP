@@ -53,6 +53,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="CepUtil.cs" />
+    <Compile Include="LogTecnico.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="FrmConsultarCEP.resx">
       <DependentUpon>FrmConsultarCEP.cs</DependentUpon>
