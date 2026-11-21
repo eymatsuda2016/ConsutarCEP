@@ -55,6 +55,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="CepUtil.cs" />
+    <Compile Include="ConsultaLoteUtil.cs" />
     <Compile Include="LogTecnico.cs" />
     <Compile Include="AtualizacaoChecker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

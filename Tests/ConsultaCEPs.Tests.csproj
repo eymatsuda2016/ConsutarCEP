@@ -12,5 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\CepUtil.cs" Link="CepUtil.cs" />
+    <Compile Include="..\ConsultaLoteUtil.cs" Link="ConsultaLoteUtil.cs" />
   </ItemGroup>
 </Project>

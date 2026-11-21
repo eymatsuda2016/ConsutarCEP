@@ -573,12 +573,8 @@ namespace ConsultaCEPs
                     return;
                 }
 
-                List<string> ceps = File.ReadAllLines(abrir.FileName, Encoding.UTF8)
-                    .Select(CepUtil.SomenteNumeros)
-                    .Where(cep => cep.Length == 8)
-                    .Distinct()
-                    .Take(100)
-                    .ToList();
+                List<string> ceps = ConsultaLoteUtil.ExtrairCepsValidos(
+                    File.ReadAllLines(abrir.FileName, Encoding.UTF8), 100);
 
                 if (ceps.Count == 0)
                 {
