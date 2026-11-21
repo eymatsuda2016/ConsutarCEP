@@ -146,6 +146,23 @@ namespace ConsultaCEPs
 
         }
 
+        private void txtCEP_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void txtCEP_Leave(object sender, EventArgs e)
+        {
+            string cep = SomenteNumeros(txtCEP.Text);
+            if (cep.Length == 8)
+            {
+                txtCEP.Text = cep.Insert(5, "-");
+            }
+        }
+
         private async void btnConsultar_Click(object sender, EventArgs e)
         {
             string cep = SomenteNumeros(txtCEP.Text);

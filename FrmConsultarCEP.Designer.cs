@@ -68,6 +68,9 @@
             this.txtCEP.Name = "txtCEP";
             this.txtCEP.Size = new System.Drawing.Size(201, 20);
             this.txtCEP.TabIndex = 1;
+            this.txtCEP.MaxLength = 9;
+            this.txtCEP.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtCEP_KeyPress);
+            this.txtCEP.Leave += new System.EventHandler(this.txtCEP_Leave);
             // 
             // groupBox1
             // 
