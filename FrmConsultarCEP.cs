@@ -174,9 +174,11 @@ namespace ConsultaCEPs
             PrepararJanelaInicial();
             ConfigurarAcessibilidade();
             ArredondarBotao(btnConsultar, 12);
+            ArredondarBotao(btnConsultaLote, 12);
             ArredondarBotao(btnLimpar, 10);
             ArredondarBotao(btnSair, 10);
             ConfigurarEfeitoHover(btnConsultar, Color.FromArgb(38, 115, 170), Color.FromArgb(63, 145, 205));
+            ConfigurarEfeitoHover(btnConsultaLote, Color.FromArgb(72, 137, 104), Color.FromArgb(95, 164, 126));
             ConfigurarEfeitoHover(btnLimpar, Color.FromArgb(92, 155, 213), Color.FromArgb(124, 181, 230));
             ConfigurarEfeitoHover(btnSair, Color.FromArgb(27, 64, 96), Color.FromArgb(48, 94, 130));
             ConfigurarEfeitoHover(btnCopiarCep, Color.FromArgb(63, 145, 205), Color.FromArgb(92, 169, 220));
@@ -215,6 +217,8 @@ namespace ConsultaCEPs
             txtObservacao.AccessibleDescription = "Detalhes adicionais do CEP selecionado.";
             btnConsultar.AccessibleName = "Consultar CEP";
             btnConsultar.AccessibleDescription = "Executa a consulta do CEP ou do endereço informado.";
+            btnConsultaLote.AccessibleName = "Consulta em lote";
+            btnConsultaLote.AccessibleDescription = "Consulta vários CEPs a partir de um arquivo de texto e exporta os resultados em CSV.";
             btnCopiarCep.AccessibleName = "Copiar CEP";
             btnCopiarCep.AccessibleDescription = "Copia o CEP selecionado para a área de transferência.";
             btnExportar.AccessibleName = "Exportar consulta";
@@ -226,6 +230,8 @@ namespace ConsultaCEPs
 
             txtCEP.TabIndex = 0;
             btnConsultar.TabIndex = 1;
+            btnConsultaLote.TabIndex = 2;
+            groupBox1.TabIndex = 3;
             txtEstado.TabIndex = 0;
             txtCidade.TabIndex = 1;
             txtLogradouro.TabIndex = 2;
@@ -522,6 +528,149 @@ namespace ConsultaCEPs
                 btnConsultar.Text = textoBotaoConsultar;
                 btnConsultar.Cursor = Cursors.Hand;
             }
+        }
+
+        private async void btnConsultaLote_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog abrir = new OpenFileDialog())
+            {
+                abrir.Title = "Selecionar arquivo com CEPs";
+                abrir.Filter = "Arquivo de texto (*.txt)|*.txt|Todos os arquivos (*.*)|*.*";
+                abrir.CheckFileExists = true;
+
+                if (abrir.ShowDialog() != DialogResult.OK)
+                {
+                    return;
+                }
+
+                List<string> ceps = File.ReadAllLines(abrir.FileName, Encoding.UTF8)
+                    .Select(CepUtil.SomenteNumeros)
+                    .Where(cep => cep.Length == 8)
+                    .Distinct()
+                    .Take(100)
+                    .ToList();
+
+                if (ceps.Count == 0)
+                {
+                    MessageBox.Show("O arquivo não contém CEPs válidos com oito números.", "Consulta em lote", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                List<ResultadoConsultaLote> resultados = new List<ResultadoConsultaLote>();
+                btnConsultaLote.Enabled = false;
+                btnConsultar.Enabled = false;
+                btnConsultaLote.Cursor = Cursors.WaitCursor;
+
+                try
+                {
+                    for (int indice = 0; indice < ceps.Count; indice++)
+                    {
+                        btnConsultaLote.Text = string.Format("Lote {0}/{1}", indice + 1, ceps.Count);
+                        btnConsultaLote.Refresh();
+                        resultados.Add(await ConsultarCepParaLoteAsync(ceps[indice]));
+                    }
+
+                    using (SaveFileDialog salvar = new SaveFileDialog())
+                    {
+                        salvar.Title = "Salvar resultados da consulta em lote";
+                        salvar.Filter = "Arquivo CSV (*.csv)|*.csv";
+                        salvar.DefaultExt = "csv";
+                        salvar.AddExtension = true;
+                        salvar.FileName = "ConsultasCEP_Lote.csv";
+
+                        if (salvar.ShowDialog() == DialogResult.OK)
+                        {
+                            File.WriteAllText(salvar.FileName, CriarConteudoCsvLote(resultados), Encoding.UTF8);
+                            LogTecnico.Registrar("Consulta em lote exportada em CSV");
+                            MessageBox.Show(string.Format("{0} CEP(s) foram processados e exportados.", resultados.Count), "Consulta em lote concluída", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+                }
+                catch (Exception excecao)
+                {
+                    LogTecnico.Registrar("Erro na consulta em lote", excecao);
+                    MessageBox.Show("Não foi possível concluir a consulta em lote. Verifique o arquivo e tente novamente.", "Erro na consulta em lote", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    btnConsultaLote.Enabled = true;
+                    btnConsultar.Enabled = true;
+                    btnConsultaLote.Text = "Consulta em lote";
+                    btnConsultaLote.Cursor = Cursors.Hand;
+                }
+            }
+        }
+
+        private async Task<ResultadoConsultaLote> ConsultarCepParaLoteAsync(string cep)
+        {
+            string cepFormatado = cep.Insert(5, "-");
+            string url = string.Format("https://viacep.com.br/ws/{0}/json/", cep);
+            string json;
+
+            try
+            {
+                if (!TentarObterDoCache(url, out json))
+                {
+                    if (!NetworkInterface.GetIsNetworkAvailable())
+                    {
+                        return ResultadoConsultaLote.Erro(cepFormatado, "Sem conexão");
+                    }
+
+                    using (HttpResponseMessage resposta = await clienteHttp.GetAsync(url))
+                    {
+                        resposta.EnsureSuccessStatusCode();
+                        json = await resposta.Content.ReadAsStringAsync();
+                    }
+
+                    ArmazenarNoCache(url, json);
+                }
+
+                ViaCepEndereco endereco = Desserializar<ViaCepEndereco>(json);
+                if (endereco == null || string.IsNullOrWhiteSpace(endereco.Cep))
+                {
+                    return ResultadoConsultaLote.Erro(cepFormatado, "Não encontrado");
+                }
+
+                return new ResultadoConsultaLote
+                {
+                    Cep = endereco.Cep,
+                    Status = "OK",
+                    Uf = endereco.Uf,
+                    Localidade = endereco.Localidade,
+                    Bairro = endereco.Bairro,
+                    Logradouro = endereco.Logradouro,
+                    Observacao = string.IsNullOrWhiteSpace(endereco.Complemento) ? string.Empty : endereco.Complemento
+                };
+            }
+            catch (TaskCanceledException excecao)
+            {
+                LogTecnico.Registrar("CEP em lote expirou por tempo esgotado", excecao);
+                return ResultadoConsultaLote.Erro(cepFormatado, "Tempo esgotado");
+            }
+            catch (HttpRequestException excecao)
+            {
+                LogTecnico.Registrar("CEP em lote falhou por erro de conexão", excecao);
+                return ResultadoConsultaLote.Erro(cepFormatado, "Erro de conexão");
+            }
+            catch (Exception excecao)
+            {
+                LogTecnico.Registrar("CEP em lote falhou por erro inesperado", excecao);
+                return ResultadoConsultaLote.Erro(cepFormatado, "Erro inesperado");
+            }
+        }
+
+        private static string CriarConteudoCsvLote(IEnumerable<ResultadoConsultaLote> resultados)
+        {
+            string[] cabecalho = { "CEP", "Status", "UF", "Localidade", "Bairro/Distrito", "Logradouro", "Observação" };
+            StringBuilder csv = new StringBuilder(EscaparLinhaCsv(cabecalho));
+            foreach (ResultadoConsultaLote resultado in resultados)
+            {
+                string[] valores = { resultado.Cep, resultado.Status, resultado.Uf, resultado.Localidade, resultado.Bairro, resultado.Logradouro, resultado.Observacao };
+                csv.AppendLine();
+                csv.Append(EscaparLinhaCsv(valores));
+            }
+
+            return csv.ToString() + Environment.NewLine;
         }
 
         private void btnLimpar_Click(object sender, EventArgs e)
@@ -936,6 +1085,22 @@ namespace ConsultaCEPs
 
                 botao.Region = new Region(caminho);
             }
+        }
+    }
+
+    internal class ResultadoConsultaLote
+    {
+        public string Cep { get; set; }
+        public string Status { get; set; }
+        public string Uf { get; set; }
+        public string Localidade { get; set; }
+        public string Bairro { get; set; }
+        public string Logradouro { get; set; }
+        public string Observacao { get; set; }
+
+        public static ResultadoConsultaLote Erro(string cep, string status)
+        {
+            return new ResultadoConsultaLote { Cep = cep, Status = status };
         }
     }
 

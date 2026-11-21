@@ -53,6 +53,7 @@
             this.btnLimpar = new System.Windows.Forms.Button();
             this.btnSair = new System.Windows.Forms.Button();
             this.btnConsultar = new System.Windows.Forms.Button();
+            this.btnConsultaLote = new System.Windows.Forms.Button();
             this.lblTamanhoFonte = new System.Windows.Forms.Label();
             this.btnDiminuirFonte = new System.Windows.Forms.Button();
             this.btnAumentarFonte = new System.Windows.Forms.Button();
@@ -321,11 +322,26 @@
             this.btnConsultar.ForeColor = System.Drawing.Color.White;
             this.btnConsultar.Location = new System.Drawing.Point(249, 32);
             this.btnConsultar.Name = "btnConsultar";
-            this.btnConsultar.Size = new System.Drawing.Size(274, 30);
+            this.btnConsultar.Size = new System.Drawing.Size(135, 30);
             this.btnConsultar.TabIndex = 3;
             this.btnConsultar.Text = "Consultar CEP";
             this.btnConsultar.UseVisualStyleBackColor = false;
             this.btnConsultar.Click += new System.EventHandler(this.btnConsultar_Click);
+            // 
+            // btnConsultaLote
+            // 
+            this.btnConsultaLote.BackColor = System.Drawing.Color.FromArgb(72, 137, 104);
+            this.btnConsultaLote.FlatAppearance.BorderSize = 0;
+            this.btnConsultaLote.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnConsultaLote.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnConsultaLote.ForeColor = System.Drawing.Color.White;
+            this.btnConsultaLote.Location = new System.Drawing.Point(388, 32);
+            this.btnConsultaLote.Name = "btnConsultaLote";
+            this.btnConsultaLote.Size = new System.Drawing.Size(135, 30);
+            this.btnConsultaLote.TabIndex = 4;
+            this.btnConsultaLote.Text = "Consulta em lote";
+            this.btnConsultaLote.UseVisualStyleBackColor = false;
+            this.btnConsultaLote.Click += new System.EventHandler(this.btnConsultaLote_Click);
             // 
             // lblDesenvolvedor
             // 
@@ -402,6 +418,7 @@
             this.Controls.Add(this.btnExportar);
             this.Controls.Add(this.btnCopiarCep);
             this.Controls.Add(this.btnConsultar);
+            this.Controls.Add(this.btnConsultaLote);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.txtCEP);
             this.Controls.Add(this.label1);
@@ -445,6 +462,7 @@
         private System.Windows.Forms.TextBox txtEstado;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button btnConsultar;
+        private System.Windows.Forms.Button btnConsultaLote;
         private System.Windows.Forms.Button btnCopiarCep;
         private System.Windows.Forms.Button btnExportar;
         private System.Windows.Forms.Button btnLimpar;
