@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -579,7 +580,7 @@ namespace ConsultaCEPs
             using (SaveFileDialog dialogo = new SaveFileDialog())
             {
                 dialogo.Title = "Exportar consulta de CEP";
-                dialogo.Filter = "Arquivo de texto (*.txt)|*.txt|Arquivo CSV (*.csv)|*.csv|Todos os arquivos (*.*)|*.*";
+                dialogo.Filter = "Arquivo de texto (*.txt)|*.txt|Arquivo CSV (*.csv)|*.csv|Arquivo Excel (*.xlsx)|*.xlsx|Todos os arquivos (*.*)|*.*";
                 dialogo.DefaultExt = "txt";
                 dialogo.AddExtension = true;
                 dialogo.FileName = "ConsultaCEP_" + cep.Replace("-", "") + ".txt";
@@ -589,7 +590,18 @@ namespace ConsultaCEPs
                     return;
                 }
 
-                bool exportarCsv = string.Equals(Path.GetExtension(dialogo.FileName), ".csv", StringComparison.OrdinalIgnoreCase);
+                string caminhoExportacao = dialogo.FileName;
+                if (dialogo.FilterIndex == 2)
+                {
+                    caminhoExportacao = Path.ChangeExtension(caminhoExportacao, "csv");
+                }
+                else if (dialogo.FilterIndex == 3)
+                {
+                    caminhoExportacao = Path.ChangeExtension(caminhoExportacao, "xlsx");
+                }
+
+                bool exportarCsv = string.Equals(Path.GetExtension(caminhoExportacao), ".csv", StringComparison.OrdinalIgnoreCase);
+                bool exportarXlsx = string.Equals(Path.GetExtension(caminhoExportacao), ".xlsx", StringComparison.OrdinalIgnoreCase);
                 string conteudo = exportarCsv
                     ? CriarConteudoCsv()
                     : string.Format(
@@ -604,8 +616,16 @@ namespace ConsultaCEPs
 
                 try
                 {
-                    File.WriteAllText(dialogo.FileName, conteudo, Encoding.UTF8);
-                    LogTecnico.Registrar(exportarCsv ? "Consulta exportada em CSV" : "Consulta exportada em TXT");
+                    if (exportarXlsx)
+                    {
+                        ExportarXlsx(caminhoExportacao);
+                    }
+                    else
+                    {
+                        File.WriteAllText(caminhoExportacao, conteudo, Encoding.UTF8);
+                    }
+
+                    LogTecnico.Registrar(exportarXlsx ? "Consulta exportada em XLSX" : exportarCsv ? "Consulta exportada em CSV" : "Consulta exportada em TXT");
                     MessageBox.Show("Consulta exportada com sucesso.", "Exportação concluída", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (IOException excecao)
@@ -637,6 +657,84 @@ namespace ConsultaCEPs
         {
             string campo = valor ?? string.Empty;
             return "\"" + campo.Replace("\"", "\"\"").Replace("\r", " ").Replace("\n", " ") + "\"";
+        }
+
+        private void ExportarXlsx(string caminho)
+        {
+            string[] cabecalho = { "CEP", "UF", "Localidade", "Bairro/Distrito", "Logradouro", "Observação" };
+            string[] valores = { txtCEP.Text, txtEstado.Text, txtCidade.Text, txtBairro.Text, txtLogradouro.Text, txtObservacao.Text };
+
+            using (FileStream arquivo = new FileStream(caminho, FileMode.Create, FileAccess.Write))
+            using (ZipArchive planilha = new ZipArchive(arquivo, ZipArchiveMode.Create))
+            {
+                AdicionarEntradaXlsx(planilha, "[Content_Types].xml",
+                    "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                    "<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">" +
+                    "<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>" +
+                    "<Default Extension=\"xml\" ContentType=\"application/xml\"/>" +
+                    "<Override PartName=\"/xl/workbook.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml\"/>" +
+                    "<Override PartName=\"/xl/worksheets/sheet1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml\"/>" +
+                    "</Types>");
+                AdicionarEntradaXlsx(planilha, "_rels/.rels",
+                    "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                    "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">" +
+                    "<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"xl/workbook.xml\"/>" +
+                    "</Relationships>");
+                AdicionarEntradaXlsx(planilha, "xl/workbook.xml",
+                    "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                    "<workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">" +
+                    "<sheets><sheet name=\"Consulta CEP\" sheetId=\"1\" r:id=\"rId1\"/></sheets></workbook>");
+                AdicionarEntradaXlsx(planilha, "xl/_rels/workbook.xml.rels",
+                    "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                    "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">" +
+                    "<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet\" Target=\"worksheets/sheet1.xml\"/>" +
+                    "</Relationships>");
+
+                StringBuilder planilhaXml = new StringBuilder(
+                    "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                    "<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\"><sheetData>");
+                AdicionarLinhaXlsx(planilhaXml, 1, cabecalho);
+                AdicionarLinhaXlsx(planilhaXml, 2, valores);
+                planilhaXml.Append("</sheetData></worksheet>");
+                AdicionarEntradaXlsx(planilha, "xl/worksheets/sheet1.xml", planilhaXml.ToString());
+            }
+        }
+
+        private static void AdicionarLinhaXlsx(StringBuilder xml, int numeroLinha, IEnumerable<string> valores)
+        {
+            xml.Append("<row r=\"").Append(numeroLinha).Append("\">");
+            int numeroColuna = 0;
+            foreach (string valor in valores)
+            {
+                string coluna = ((char)('A' + numeroColuna)).ToString();
+                xml.Append("<c r=\"").Append(coluna).Append(numeroLinha).Append("\" t=\"inlineStr\"><is><t>");
+                xml.Append(EscaparXml(valor));
+                xml.Append("</t></is></c>");
+                numeroColuna++;
+            }
+
+            xml.Append("</row>");
+        }
+
+        private static string EscaparXml(string valor)
+        {
+            return (valor ?? string.Empty)
+                .Replace("&", "&amp;")
+                .Replace("<", "&lt;")
+                .Replace(">", "&gt;")
+                .Replace("\"", "&quot;")
+                .Replace("'", "&apos;")
+                .Replace("\r", " ")
+                .Replace("\n", " ");
+        }
+
+        private static void AdicionarEntradaXlsx(ZipArchive planilha, string nome, string conteudo)
+        {
+            ZipArchiveEntry entrada = planilha.CreateEntry(nome);
+            using (StreamWriter escritor = new StreamWriter(entrada.Open(), new UTF8Encoding(false)))
+            {
+                escritor.Write(conteudo);
+            }
         }
 
         private void cmbCEPs_SelectedIndexChanged(object sender, EventArgs e)
