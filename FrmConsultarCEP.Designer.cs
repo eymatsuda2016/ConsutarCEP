@@ -362,9 +362,11 @@
             this.Controls.Add(this.lblFonteDados);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.MaximizeBox = true;
+            this.KeyPreview = true;
             this.Name = "FrmConsultaCEP";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Consultar CEP por endereço";
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FrmConsultaCEP_KeyDown);
             this.Load += new System.EventHandler(this.FrmConsultaCEP_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();

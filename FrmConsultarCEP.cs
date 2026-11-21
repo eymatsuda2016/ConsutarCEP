@@ -146,6 +146,26 @@ namespace ConsultaCEPs
             }
         }
 
+        private void FrmConsultaCEP_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                if (btnConsultar.Enabled)
+                {
+                    btnConsultar.PerformClick();
+                }
+
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+            }
+            else if (e.KeyCode == Keys.Escape)
+            {
+                btnLimpar.PerformClick();
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+            }
+        }
+
         private void AtualizarLimitesMaximizacao()
         {
             Screen telaAtual = Screen.FromControl(this);
