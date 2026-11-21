@@ -23,6 +23,8 @@ namespace ConsultaCEPs
         private ViaCepEndereco[] enderecosEncontrados = new ViaCepEndereco[0];
         private Bitmap marcaDagua;
         private readonly List<string> historicoCEPs = new List<string>();
+        private readonly Dictionary<string, string> cacheRespostas = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private readonly List<string> ordemCacheRespostas = new List<string>();
         private bool atualizandoHistorico;
         private static readonly string arquivoHistorico = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
@@ -290,12 +292,6 @@ namespace ConsultaCEPs
                 return;
             }
 
-            if (!NetworkInterface.GetIsNetworkAvailable())
-            {
-                MessageBox.Show("Não há conexão de rede disponível. Verifique sua internet e tente novamente.", "Sem conexão", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
             string textoBotaoConsultar = btnConsultar.Text;
             btnConsultar.Enabled = false;
             btnConsultar.Text = "Consultando...";
@@ -311,11 +307,26 @@ namespace ConsultaCEPs
                     : string.Format("https://viacep.com.br/ws/{0}/json/", cep);
 
                 string json;
-                using (HttpResponseMessage resposta = await clienteHttp.GetAsync(url))
+                if (cacheRespostas.TryGetValue(url, out json))
                 {
-                    resposta.EnsureSuccessStatusCode();
-                    LogTecnico.Registrar("Serviço ViaCEP respondeu com sucesso");
-                    json = await resposta.Content.ReadAsStringAsync();
+                    LogTecnico.Registrar("Consulta atendida pelo cache recente");
+                }
+                else
+                {
+                    if (!NetworkInterface.GetIsNetworkAvailable())
+                    {
+                        MessageBox.Show("Não há conexão de rede disponível. Verifique sua internet e tente novamente.", "Sem conexão", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    using (HttpResponseMessage resposta = await clienteHttp.GetAsync(url))
+                    {
+                        resposta.EnsureSuccessStatusCode();
+                        LogTecnico.Registrar("Serviço ViaCEP respondeu com sucesso");
+                        json = await resposta.Content.ReadAsStringAsync();
+                    }
+
+                    ArmazenarNoCache(url, json);
                 }
 
                 if (buscaPorEndereco)
@@ -391,6 +402,22 @@ namespace ConsultaCEPs
             txtCEP.Clear();
             LimparResultado();
             txtEstado.Focus();
+        }
+
+        private void ArmazenarNoCache(string chave, string resposta)
+        {
+            cacheRespostas[chave] = resposta;
+            ordemCacheRespostas.Remove(chave);
+            ordemCacheRespostas.Add(chave);
+
+            while (ordemCacheRespostas.Count > 20)
+            {
+                string chaveMaisAntiga = ordemCacheRespostas[0];
+                ordemCacheRespostas.RemoveAt(0);
+                cacheRespostas.Remove(chaveMaisAntiga);
+            }
+
+            LogTecnico.Registrar("Resposta armazenada no cache recente");
         }
 
         private void btnSair_Click(object sender, EventArgs e)
