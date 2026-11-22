@@ -88,3 +88,14 @@ O projeto possui pipeline de build e testes em `.github\workflows\ci.yml`. Os ar
 ## Repositório
 
 <https://github.com/eymatsuda2016/ConsutarCEP>
+
+## Publicação de versões
+
+O fluxo `.github/workflows/release.yml` publica versões oficiais no GitHub. Para iniciar uma publicação, crie e envie uma tag no formato `v1.0.0`:
+
+```powershell
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+O GitHub Actions compila o Release, executa os testes, cria o instalador e publica o executável, o instalador, o arquivo de configuração e `SHA256SUMS.txt` em uma GitHub Release. Também é possível iniciar o fluxo manualmente em **Actions > Publicar Release do Consultar CEP > Run workflow**, informando a tag da versão.
