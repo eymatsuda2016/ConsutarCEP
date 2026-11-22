@@ -40,11 +40,15 @@ namespace ConsultaCEPs
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "ConsultarCEP",
             "escala-fonte.txt");
+        private static readonly string arquivoValidadeCache = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "ConsultarCEP",
+            "validade-cache.txt");
         private float escalaFonte = 1.0f;
         private const float EscalaFonteMinima = 0.85f;
         private const float EscalaFonteMaxima = 1.25f;
         private const float TamanhoFonteBase = 8.25f;
-        private static readonly TimeSpan ValidadeCache = TimeSpan.FromMinutes(10);
+        private TimeSpan validadeCache = TimeSpan.FromMinutes(10);
 
         private static readonly HttpClient clienteHttp = new HttpClient
         {
@@ -192,6 +196,7 @@ namespace ConsultaCEPs
             btnExportar.Enabled = false;
             CarregarHistorico();
             CarregarEscalaFonte();
+            CarregarValidadeCache();
             AplicarEscalaFonte();
             AtualizarLimitesMaximizacao();
             btnConsultar.Image = CriarImagemBotaoConsultar();
@@ -330,13 +335,15 @@ namespace ConsultaCEPs
 
         private void btnConfiguracoes_Click(object sender, EventArgs e)
         {
-            using (FrmConfiguracoes configuracoes = new FrmConfiguracoes(escalaFonte))
+            using (FrmConfiguracoes configuracoes = new FrmConfiguracoes(escalaFonte, (int)validadeCache.TotalMinutes))
             {
                 if (configuracoes.ShowDialog(this) == DialogResult.OK)
                 {
                     escalaFonte = configuracoes.EscalaSelecionada;
+                    validadeCache = TimeSpan.FromMinutes(configuracoes.ValidadeCacheSelecionada);
                     AplicarEscalaFonte();
                     SalvarEscalaFonte();
+                    SalvarValidadeCache();
                 }
             }
         }
@@ -380,6 +387,41 @@ namespace ConsultaCEPs
         private void AplicarEscalaFonte()
         {
             AplicarEscalaFonte(this, escalaFonte);
+        }
+
+        private void CarregarValidadeCache()
+        {
+            try
+            {
+                if (!File.Exists(arquivoValidadeCache))
+                {
+                    return;
+                }
+
+                int minutos;
+                if (int.TryParse(File.ReadAllText(arquivoValidadeCache).Trim(), out minutos))
+                {
+                    validadeCache = TimeSpan.FromMinutes(Math.Max(1, Math.Min(60, minutos)));
+                }
+            }
+            catch (Exception excecao)
+            {
+                LogTecnico.Registrar("Não foi possível carregar a validade do cache", excecao);
+            }
+        }
+
+        private void SalvarValidadeCache()
+        {
+            try
+            {
+                string pasta = Path.GetDirectoryName(arquivoValidadeCache);
+                Directory.CreateDirectory(pasta);
+                File.WriteAllText(arquivoValidadeCache, ((int)validadeCache.TotalMinutes).ToString(CultureInfo.InvariantCulture));
+            }
+            catch (Exception excecao)
+            {
+                LogTecnico.Registrar("Não foi possível salvar a validade do cache", excecao);
+            }
         }
 
         private static void AplicarEscalaFonte(Control controle, float escala)
@@ -828,7 +870,7 @@ namespace ConsultaCEPs
             if (cacheRespostas.TryGetValue(chave, out resposta) &&
                 datasCacheRespostas.TryGetValue(chave, out dataArmazenamento))
             {
-                if (DateTime.UtcNow - dataArmazenamento <= ValidadeCache)
+                if (DateTime.UtcNow - dataArmazenamento <= validadeCache)
                 {
                     return true;
                 }
