@@ -255,7 +255,7 @@
             this.btnCopiarCep.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCopiarCep.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnCopiarCep.ForeColor = System.Drawing.Color.White;
-            this.btnCopiarCep.Location = new System.Drawing.Point(25, 492);
+            this.btnCopiarCep.Location = new System.Drawing.Point(25, 478);
             this.btnCopiarCep.Name = "btnCopiarCep";
             this.btnCopiarCep.Size = new System.Drawing.Size(105, 30);
             this.btnCopiarCep.TabIndex = 6;
@@ -270,7 +270,7 @@
             this.btnExportar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnExportar.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnExportar.ForeColor = System.Drawing.Color.White;
-            this.btnExportar.Location = new System.Drawing.Point(140, 492);
+            this.btnExportar.Location = new System.Drawing.Point(140, 478);
             this.btnExportar.Name = "btnExportar";
             this.btnExportar.Size = new System.Drawing.Size(95, 30);
             this.btnExportar.TabIndex = 7;
@@ -288,7 +288,7 @@
             this.btnLimpar.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnLimpar.ForeColor = System.Drawing.Color.White;
             this.btnLimpar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnLimpar.Location = new System.Drawing.Point(249, 492);
+            this.btnLimpar.Location = new System.Drawing.Point(249, 478);
             this.btnLimpar.Name = "btnLimpar";
             this.btnLimpar.Size = new System.Drawing.Size(137, 30);
             this.btnLimpar.TabIndex = 4;
@@ -306,7 +306,7 @@
             this.btnSair.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnSair.ForeColor = System.Drawing.Color.White;
             this.btnSair.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnSair.Location = new System.Drawing.Point(406, 492);
+            this.btnSair.Location = new System.Drawing.Point(406, 478);
             this.btnSair.Name = "btnSair";
             this.btnSair.Size = new System.Drawing.Size(137, 30);
             this.btnSair.TabIndex = 5;
