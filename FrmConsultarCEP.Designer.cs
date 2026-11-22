@@ -57,6 +57,7 @@
             this.lblTamanhoFonte = new System.Windows.Forms.Label();
             this.btnDiminuirFonte = new System.Windows.Forms.Button();
             this.btnAumentarFonte = new System.Windows.Forms.Button();
+            this.btnConfiguracoes = new System.Windows.Forms.Button();
             this.toolTipFonte = new System.Windows.Forms.ToolTip(this.components);
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -359,7 +360,7 @@
             this.lblFonteDados.AutoSize = true;
             this.lblFonteDados.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblFonteDados.ForeColor = System.Drawing.Color.Gray;
-            this.lblFonteDados.Location = new System.Drawing.Point(421, 528);
+            this.lblFonteDados.Location = new System.Drawing.Point(493, 528);
             this.lblFonteDados.Name = "lblFonteDados";
             this.lblFonteDados.Size = new System.Drawing.Size(76, 13);
             this.lblFonteDados.TabIndex = 7;
@@ -406,6 +407,19 @@
             this.btnAumentarFonte.UseVisualStyleBackColor = false;
             this.btnAumentarFonte.Click += new System.EventHandler(this.btnAumentarFonte_Click);
             this.toolTipFonte.SetToolTip(this.btnAumentarFonte, "Aumentar tamanho da fonte");
+            // btnConfiguracoes
+            this.btnConfiguracoes.BackColor = System.Drawing.Color.FromArgb(27, 64, 96);
+            this.btnConfiguracoes.FlatAppearance.BorderSize = 0;
+            this.btnConfiguracoes.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnConfiguracoes.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.btnConfiguracoes.ForeColor = System.Drawing.Color.White;
+            this.btnConfiguracoes.Location = new System.Drawing.Point(400, 524);
+            this.btnConfiguracoes.Name = "btnConfiguracoes";
+            this.btnConfiguracoes.Size = new System.Drawing.Size(88, 21);
+            this.btnConfiguracoes.TabIndex = 11;
+            this.btnConfiguracoes.Text = "Configurar";
+            this.btnConfiguracoes.UseVisualStyleBackColor = false;
+            this.btnConfiguracoes.Click += new System.EventHandler(this.btnConfiguracoes_Click);
             // 
             // FrmConsultaCEP
             // 
@@ -427,6 +441,7 @@
             this.Controls.Add(this.lblTamanhoFonte);
             this.Controls.Add(this.btnDiminuirFonte);
             this.Controls.Add(this.btnAumentarFonte);
+            this.Controls.Add(this.btnConfiguracoes);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.MaximizeBox = true;
             this.KeyPreview = true;
@@ -472,6 +487,7 @@
         private System.Windows.Forms.Label lblTamanhoFonte;
         private System.Windows.Forms.Button btnDiminuirFonte;
         private System.Windows.Forms.Button btnAumentarFonte;
+        private System.Windows.Forms.Button btnConfiguracoes;
         private System.Windows.Forms.ToolTip toolTipFonte;
     }
 }

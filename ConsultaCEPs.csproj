@@ -53,6 +53,12 @@
     <Compile Include="FrmConsultarCEP.Designer.cs">
       <DependentUpon>FrmConsultarCEP.cs</DependentUpon>
     </Compile>
+    <Compile Include="FrmConfiguracoes.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmConfiguracoes.Designer.cs">
+      <DependentUpon>FrmConfiguracoes.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="CepUtil.cs" />
     <Compile Include="ConsultaLoteUtil.cs" />

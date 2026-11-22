@@ -187,6 +187,7 @@ namespace ConsultaCEPs
             ConfigurarEfeitoHover(btnExportar, Color.FromArgb(72, 137, 104), Color.FromArgb(95, 164, 126));
             ConfigurarEfeitoHover(btnDiminuirFonte, Color.FromArgb(92, 155, 213), Color.FromArgb(124, 181, 230));
             ConfigurarEfeitoHover(btnAumentarFonte, Color.FromArgb(38, 115, 170), Color.FromArgb(63, 145, 205));
+            ConfigurarEfeitoHover(btnConfiguracoes, Color.FromArgb(27, 64, 96), Color.FromArgb(48, 94, 130));
             btnCopiarCep.Enabled = false;
             btnExportar.Enabled = false;
             CarregarHistorico();
@@ -227,6 +228,8 @@ namespace ConsultaCEPs
             btnExportar.AccessibleDescription = "Salva o resultado em TXT, CSV ou Excel.";
             btnDiminuirFonte.AccessibleName = "Diminuir tamanho da fonte";
             btnAumentarFonte.AccessibleName = "Aumentar tamanho da fonte";
+            btnConfiguracoes.AccessibleName = "Configurações";
+            btnConfiguracoes.AccessibleDescription = "Abre as configurações da aplicação.";
             btnLimpar.AccessibleName = "Limpar formulário";
             btnSair.AccessibleName = "Sair da aplicação";
 
@@ -247,6 +250,7 @@ namespace ConsultaCEPs
             btnSair.TabIndex = 7;
             btnDiminuirFonte.TabIndex = 8;
             btnAumentarFonte.TabIndex = 9;
+            btnConfiguracoes.TabIndex = 10;
         }
 
         private void FrmConsultaCEP_LocationChanged(object sender, EventArgs e)
@@ -322,6 +326,19 @@ namespace ConsultaCEPs
             escalaFonte = Math.Min(EscalaFonteMaxima, escalaFonte + 0.05f);
             AplicarEscalaFonte();
             SalvarEscalaFonte();
+        }
+
+        private void btnConfiguracoes_Click(object sender, EventArgs e)
+        {
+            using (FrmConfiguracoes configuracoes = new FrmConfiguracoes(escalaFonte))
+            {
+                if (configuracoes.ShowDialog(this) == DialogResult.OK)
+                {
+                    escalaFonte = configuracoes.EscalaSelecionada;
+                    AplicarEscalaFonte();
+                    SalvarEscalaFonte();
+                }
+            }
         }
 
         private void CarregarEscalaFonte()
