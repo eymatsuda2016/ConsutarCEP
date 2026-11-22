@@ -89,6 +89,10 @@ O projeto possui pipeline de build e testes em `.github\workflows\ci.yml`. Os ar
 
 <https://github.com/eymatsuda2016/ConsutarCEP>
 
+## Instalador mais recente
+
+Após um build e testes bem-sucedidos na branch `main`, o workflow `publicar-instalador.yml` atualiza automaticamente a Release prévia [`latest`](https://github.com/eymatsuda2016/ConsutarCEP/releases/tag/latest). Ela contém o instalador, o executável, o arquivo de configuração e os checksums SHA-256 da versão mais recente.
+
 ## Publicação de versões
 
 O fluxo `.github/workflows/release.yml` publica versões oficiais no GitHub. Para iniciar uma publicação, crie e envie uma tag no formato `v1.0.0`:

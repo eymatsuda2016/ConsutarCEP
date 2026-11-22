@@ -1,0 +1,71 @@
+name: Publicar instalador mais recente
+
+on:
+  workflow_run:
+    workflows: ["Compilar e testar Consultar CEP"]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  publicar:
+    name: Gerar e publicar instalador latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: windows-latest
+
+    steps:
+      - name: Baixar código validado
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Configurar .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Configurar MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Compilar versão Release
+        shell: pwsh
+        run: msbuild .\ConsultaCEPs.csproj /t:Build /p:Configuration=Release /v:minimal
+
+      - name: Executar testes automatizados
+        shell: pwsh
+        run: dotnet test .\Tests\ConsultaCEPs.Tests.csproj --verbosity minimal
+
+      - name: Criar instalador
+        shell: pwsh
+        run: .\Installer\Criar-Instalador.ps1
+
+      - name: Gerar checksums
+        shell: pwsh
+        run: |
+          $arquivos = @(
+            'bin/Release/ConsultaCEPs.exe',
+            'bin/Release/ConsultaCEPs.exe.config',
+            'bin/Release/ConsultarCEP-Setup.exe'
+          )
+          $linhas = foreach ($arquivo in $arquivos) {
+            $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $arquivo).Hash
+            "$hash  $([System.IO.Path]::GetFileName($arquivo))"
+          }
+          Set-Content -LiteralPath 'bin/Release/SHA256SUMS.txt' -Value $linhas -Encoding ASCII
+
+      - name: Atualizar Release latest
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          target_commitish: ${{ github.event.workflow_run.head_sha }}
+          name: Consultar CEP - Última versão
+          prerelease: true
+          make_latest: false
+          generate_release_notes: false
+          files: |
+            bin/Release/ConsultaCEPs.exe
+            bin/Release/ConsultaCEPs.exe.config
+            bin/Release/ConsultarCEP-Setup.exe
+            bin/Release/SHA256SUMS.txt
