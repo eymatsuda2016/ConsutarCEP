@@ -8,14 +8,17 @@ namespace ConsultaCEPs
     {
         public float EscalaSelecionada { get; private set; }
         public int ValidadeCacheSelecionada { get; private set; }
+        public bool ModoEscuroSelecionado { get; private set; }
 
-        public FrmConfiguracoes(float escalaAtual, int validadeCacheAtual)
+        public FrmConfiguracoes(float escalaAtual, int validadeCacheAtual, bool modoEscuroAtual)
         {
             InitializeComponent();
             EscalaSelecionada = escalaAtual;
             ValidadeCacheSelecionada = validadeCacheAtual;
+            ModoEscuroSelecionado = modoEscuroAtual;
             trkEscalaFonte.Value = Math.Max(trkEscalaFonte.Minimum, Math.Min(trkEscalaFonte.Maximum, (int)Math.Round(escalaAtual * 100)));
             trkValidadeCache.Value = Math.Max(trkValidadeCache.Minimum, Math.Min(trkValidadeCache.Maximum, validadeCacheAtual));
+            chkModoEscuro.Checked = modoEscuroAtual;
             AtualizarTextoEscala();
             AtualizarTextoValidadeCache();
         }
@@ -44,6 +47,7 @@ namespace ConsultaCEPs
         {
             EscalaSelecionada = trkEscalaFonte.Value / 100f;
             ValidadeCacheSelecionada = trkValidadeCache.Value;
+            ModoEscuroSelecionado = chkModoEscuro.Checked;
             DialogResult = DialogResult.OK;
             Close();
         }

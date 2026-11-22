@@ -44,11 +44,16 @@ namespace ConsultaCEPs
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "ConsultarCEP",
             "validade-cache.txt");
+        private static readonly string arquivoModoEscuro = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "ConsultarCEP",
+            "modo-escuro.txt");
         private float escalaFonte = 1.0f;
         private const float EscalaFonteMinima = 0.85f;
         private const float EscalaFonteMaxima = 1.25f;
         private const float TamanhoFonteBase = 8.25f;
         private TimeSpan validadeCache = TimeSpan.FromMinutes(10);
+        private bool modoEscuro;
 
         private static readonly HttpClient clienteHttp = new HttpClient
         {
@@ -197,7 +202,9 @@ namespace ConsultaCEPs
             CarregarHistorico();
             CarregarEscalaFonte();
             CarregarValidadeCache();
+            CarregarModoEscuro();
             AplicarEscalaFonte();
+            AplicarTema();
             AtualizarLimitesMaximizacao();
             btnConsultar.Image = CriarImagemBotaoConsultar();
             btnConsultar.ImageAlign = ContentAlignment.MiddleLeft;
@@ -335,15 +342,18 @@ namespace ConsultaCEPs
 
         private void btnConfiguracoes_Click(object sender, EventArgs e)
         {
-            using (FrmConfiguracoes configuracoes = new FrmConfiguracoes(escalaFonte, (int)validadeCache.TotalMinutes))
+            using (FrmConfiguracoes configuracoes = new FrmConfiguracoes(escalaFonte, (int)validadeCache.TotalMinutes, modoEscuro))
             {
                 if (configuracoes.ShowDialog(this) == DialogResult.OK)
                 {
                     escalaFonte = configuracoes.EscalaSelecionada;
                     validadeCache = TimeSpan.FromMinutes(configuracoes.ValidadeCacheSelecionada);
+                    modoEscuro = configuracoes.ModoEscuroSelecionado;
                     AplicarEscalaFonte();
+                    AplicarTema();
                     SalvarEscalaFonte();
                     SalvarValidadeCache();
+                    SalvarModoEscuro();
                 }
             }
         }
@@ -407,6 +417,84 @@ namespace ConsultaCEPs
             catch (Exception excecao)
             {
                 LogTecnico.Registrar("Não foi possível carregar a validade do cache", excecao);
+            }
+        }
+
+        private void CarregarModoEscuro()
+        {
+            try
+            {
+                if (File.Exists(arquivoModoEscuro))
+                {
+                    bool valor;
+                    if (bool.TryParse(File.ReadAllText(arquivoModoEscuro).Trim(), out valor))
+                    {
+                        modoEscuro = valor;
+                    }
+                }
+            }
+            catch (Exception excecao)
+            {
+                LogTecnico.Registrar("Não foi possível carregar o modo escuro", excecao);
+            }
+        }
+
+        private void SalvarModoEscuro()
+        {
+            try
+            {
+                string pasta = Path.GetDirectoryName(arquivoModoEscuro);
+                Directory.CreateDirectory(pasta);
+                File.WriteAllText(arquivoModoEscuro, modoEscuro.ToString());
+            }
+            catch (Exception excecao)
+            {
+                LogTecnico.Registrar("Não foi possível salvar o modo escuro", excecao);
+            }
+        }
+
+        private void AplicarTema()
+        {
+            Color fundo = modoEscuro ? Color.FromArgb(30, 42, 53) : Color.FromArgb(205, 228, 243);
+            Color fundoGrupo = modoEscuro ? Color.FromArgb(38, 55, 70) : Color.FromArgb(226, 240, 248);
+            Color fundoCampo = modoEscuro ? Color.FromArgb(52, 73, 94) : Color.White;
+            Color fundoResultado = modoEscuro ? Color.FromArgb(44, 62, 80) : Color.FromArgb(232, 241, 248);
+            Color texto = modoEscuro ? Color.FromArgb(230, 240, 247) : Color.FromArgb(27, 64, 96);
+
+            BackColor = fundo;
+            AplicarTemaControles(this, fundoGrupo, fundoCampo, fundoResultado, texto);
+        }
+
+        private static void AplicarTemaControles(Control controle, Color fundoGrupo, Color fundoCampo, Color fundoResultado, Color texto)
+        {
+            foreach (Control filho in controle.Controls)
+            {
+                if (filho is GroupBox)
+                {
+                    filho.BackColor = fundoGrupo;
+                    filho.ForeColor = texto;
+                }
+                else if (filho is Label)
+                {
+                    filho.ForeColor = texto;
+                }
+                else if (filho is TextBox)
+                {
+                    TextBox campo = (TextBox)filho;
+                    campo.BackColor = campo.ReadOnly ? fundoResultado : fundoCampo;
+                    campo.ForeColor = texto;
+                }
+                else if (filho is ComboBox)
+                {
+                    filho.BackColor = fundoCampo;
+                    filho.ForeColor = texto;
+                }
+                else if (filho is CheckBox)
+                {
+                    filho.ForeColor = texto;
+                }
+
+                AplicarTemaControles(filho, fundoGrupo, fundoCampo, fundoResultado, texto);
             }
         }
 

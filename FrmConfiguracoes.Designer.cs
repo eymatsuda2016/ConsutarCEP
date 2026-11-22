@@ -22,6 +22,7 @@ namespace ConsultaCEPs
             this.lblValidadeCache = new System.Windows.Forms.Label();
             this.trkValidadeCache = new System.Windows.Forms.TrackBar();
             this.lblValorValidadeCache = new System.Windows.Forms.Label();
+            this.chkModoEscuro = new System.Windows.Forms.CheckBox();
             this.btnSalvar = new System.Windows.Forms.Button();
             this.btnCancelar = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.trkEscalaFonte)).BeginInit();
@@ -62,6 +63,10 @@ namespace ConsultaCEPs
             this.lblValorValidadeCache.ForeColor = System.Drawing.Color.FromArgb(38, 115, 170);
             this.lblValorValidadeCache.Location = new System.Drawing.Point(302, 154);
             this.lblValorValidadeCache.Text = "10 min";
+            this.chkModoEscuro.AutoSize = true;
+            this.chkModoEscuro.ForeColor = System.Drawing.Color.FromArgb(27, 64, 96);
+            this.chkModoEscuro.Location = new System.Drawing.Point(23, 190);
+            this.chkModoEscuro.Text = "Usar modo escuro";
             this.btnSalvar.BackColor = System.Drawing.Color.FromArgb(72, 137, 104);
             this.btnSalvar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSalvar.ForeColor = System.Drawing.Color.White;
@@ -81,6 +86,7 @@ namespace ConsultaCEPs
             this.Controls.Add(this.lblValidadeCache);
             this.Controls.Add(this.trkValidadeCache);
             this.Controls.Add(this.lblValorValidadeCache);
+            this.Controls.Add(this.chkModoEscuro);
             this.Controls.Add(this.btnSalvar);
             this.Controls.Add(this.btnCancelar);
             this.AcceptButton = this.btnSalvar;
@@ -105,6 +111,7 @@ namespace ConsultaCEPs
         private System.Windows.Forms.Label lblValidadeCache;
         private System.Windows.Forms.TrackBar trkValidadeCache;
         private System.Windows.Forms.Label lblValorValidadeCache;
+        private System.Windows.Forms.CheckBox chkModoEscuro;
         private System.Windows.Forms.Button btnSalvar;
         private System.Windows.Forms.Button btnCancelar;
     }
