@@ -625,9 +625,38 @@ namespace ConsultaCEPs
 
                     if (enderecos == null || enderecos.Length == 0)
                     {
-                        LimparResultado();
-                        MessageBox.Show("Rua inexistente ou endereço não encontrado.", "Endereço não encontrado", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        return;
+                        // O ViaCEP pode não localizar alguns logradouros na busca reversa.
+                        // Tenta uma segunda fonte compatível antes de informar que não encontrou.
+                        string urlAlternativa = string.Format(
+                            "https://cepify.com.br/ws/{0}/{1}/{2}/json/",
+                            Uri.EscapeDataString(estado),
+                            Uri.EscapeDataString(cidade),
+                            Uri.EscapeDataString(logradouro));
+
+                        string jsonAlternativo;
+                        if (TentarObterDoCache(urlAlternativa, out jsonAlternativo))
+                        {
+                            LogTecnico.Registrar("Consulta de endereço atendida pela fonte alternativa");
+                        }
+                        else
+                        {
+                            using (HttpResponseMessage respostaAlternativa = await clienteHttp.GetAsync(urlAlternativa, token))
+                            {
+                                respostaAlternativa.EnsureSuccessStatusCode();
+                                jsonAlternativo = await respostaAlternativa.Content.ReadAsStringAsync();
+                            }
+
+                            ArmazenarNoCache(urlAlternativa, jsonAlternativo);
+                        }
+
+                        enderecos = Desserializar<ViaCepEndereco[]>(jsonAlternativo);
+
+                        if (enderecos == null || enderecos.Length == 0)
+                        {
+                            LimparResultadoEnderecoNaoEncontrado();
+                            MessageBox.Show("Rua inexistente ou endereço não encontrado.", "Endereço não encontrado", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            return;
+                        }
                     }
 
                     enderecosEncontrados = enderecos;
@@ -1104,6 +1133,18 @@ namespace ConsultaCEPs
             cmbCEPs.DataSource = null;
             txtEstado.Clear();
             txtCidade.Clear();
+            txtBairro.Clear();
+            txtLogradouro.Clear();
+            txtObservacao.Clear();
+            btnCopiarCep.Enabled = false;
+            btnExportar.Enabled = false;
+        }
+
+        private void LimparResultadoEnderecoNaoEncontrado()
+        {
+            enderecosEncontrados = new ViaCepEndereco[0];
+            label6.Text = "CEPs encontrados (se houver mais de um):";
+            cmbCEPs.DataSource = null;
             txtBairro.Clear();
             txtLogradouro.Clear();
             txtObservacao.Clear();

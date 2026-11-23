@@ -10,6 +10,7 @@
     <AssemblyName>ConsultaCEPs</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <ApplicationIcon>Resources\busca_cep.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -99,6 +100,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\sair.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\busca_cep.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\marca_dagua_trabalhador_postal.jpg" />
